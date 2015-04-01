@@ -1,0 +1,328 @@
+ext {
+	GROUPID = 'de.tomgrill.gdxtwitter'
+	VERSION = '0.1.0-SNAPSHOT'
+}
+
+buildscript {
+    repositories {
+        mavenCentral()
+        maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
+        jcenter()
+    }
+    dependencies {
+        classpath 'de.richsource.gradle.plugins:gwt-gradle-plugin:0.6'
+        classpath 'com.android.tools.build:gradle:1.0.0'
+        classpath 'org.robovm:robovm-gradle-plugin:1.0.0-beta-04'
+    }
+}
+
+allprojects {
+    apply plugin: "eclipse"
+    apply plugin: "idea"
+
+    version = '1.0'
+    ext {
+        appName = 'gdx-twitter'
+        gdxVersion = '1.5.5'
+        roboVMVersion = '1.0.0-beta-04'
+
+		jUnitVersion = '4.+'
+	    mockitoVersion = '1.10.+'
+	    powermockVersion = '1.6.+'
+
+		
+
+    }
+
+    repositories {
+        mavenCentral()
+        maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
+        maven { url "https://oss.sonatype.org/content/repositories/releases/" }
+    }
+
+	group = GROUPID
+    version = VERSION
+}
+
+project(":gdx-twitter-android") {
+    apply plugin : 'java'
+    	
+	apply from : '../publish.gradle'
+
+    configurations {
+        custom
+        compile.extendsFrom custom
+	}  
+
+	eclipse {
+		project {
+		    name = appName + "-android"
+		}
+	}
+
+	dependencies {
+		
+		compile project(':gdx-twitter-core')
+		
+		
+		compile "com.badlogicgames.gdx:gdx-backend-android:$gdxVersion"
+		
+		
+		compile fileTree(dir: 'libs', include: '*.jar')
+	}
+}
+
+project(":gdx-twitter-android-tests") {
+    apply plugin : 'java'
+
+	apply from : '../publish.gradle'
+
+    configurations {
+        custom
+        compile.extendsFrom custom
+	}     	
+    	
+	eclipse {
+		project {
+		    name = appName + "-android-tests"
+		}
+	}
+
+	dependencies {
+		
+		compile project(':gdx-twitter-android')
+		
+		
+		compile "junit:junit:$jUnitVersion"
+		compile "org.mockito:mockito-all:$mockitoVersion"
+		compile "org.powermock:powermock-mockito-release-full:$powermockVersion"
+		
+		
+	}
+}
+
+project(":gdx-twitter-core") {
+    apply plugin : 'java'
+    	
+	apply from : '../publish.gradle'
+
+    configurations {
+        custom
+        compile.extendsFrom custom
+	} 
+
+	eclipse {
+		project {
+		    name = appName + "-core"
+		}
+	}
+
+	dependencies {
+		compile "com.badlogicgames.gdx:gdx:$gdxVersion"
+		
+		compile fileTree(dir: 'libs', include: '*.jar')
+	}
+}
+
+project(":gdx-twitter-core-tests") {
+    apply plugin : 'java'
+    	
+	apply from : '../publish.gradle'
+
+    configurations {
+        custom
+        compile.extendsFrom custom
+	} 
+
+	eclipse {
+		project {
+		    name = appName + "-core-tests"
+		}
+	}
+	dependencies {
+		
+		compile project(':gdx-twitter-core')
+		
+		compile "com.badlogicgames.gdx:gdx-backend-headless:$gdxVersion"
+		
+//		compile "com.badlogicgames.gdx:gdx-backend-android:$gdxVersion"
+		
+		compile "junit:junit:$jUnitVersion"
+		compile "org.mockito:mockito-all:$mockitoVersion"
+		compile "org.powermock:powermock-mockito-release-full:$powermockVersion"
+
+		/** required for running test from eclipse */
+		compile "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
+		
+		/* required to prevent Couldn't load shared library 'libgdx64.so' for target: Linux, 64-bit - ERROR */
+		testCompile "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
+		
+		compile fileTree(dir: 'libs', include: '*.jar')
+	}
+}
+
+
+
+project(":gdx-twitter-desktop") {
+    apply plugin : 'java'
+    	
+	apply from : '../publish.gradle'
+
+    configurations {
+        custom
+        compile.extendsFrom custom
+	} 
+
+	eclipse {
+		project {
+		    name = appName + "-desktop"
+		}
+	}
+
+	dependencies {
+		
+		compile project(':gdx-twitter-core')
+		
+//		compile "com.badlogicgames.gdx:gdx-backend-desktop:$gdxVersion"
+		
+		compile fileTree(dir: 'libs', include: '*.jar')
+	}
+}
+
+project(":gdx-twitter-desktop-tests") {
+    apply plugin : 'java'
+
+	apply from : '../publish.gradle'
+
+    configurations {
+        custom
+        compile.extendsFrom custom
+	} 	
+    
+    	
+	eclipse {
+		project {
+		    name = appName + "-desktop-tests"
+		}
+	}
+
+	dependencies {
+		
+		compile project(':gdx-twitter-desktop')
+		
+	//	compile "com.badlogicgames.gdx:gdx-backend-desktop:$gdxVersion"
+		compile "com.badlogicgames.gdx:gdx-backend-headless:$gdxVersion"
+		
+		compile "junit:junit:$jUnitVersion"
+		compile "org.mockito:mockito-all:$mockitoVersion"
+		compile "org.powermock:powermock-mockito-release-full:$powermockVersion"
+		
+		/** required for running test from eclipse */
+		compile "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
+		
+		/* required to prevent Couldn't load shared library 'libgdx64.so' for target: Linux, 64-bit - ERROR */
+		testCompile "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
+		
+		compile fileTree(dir: 'libs', include: '*.jar')
+	}
+}
+
+project(":gdx-twitter-html") {
+    apply plugin : 'java'
+    	
+    	
+	apply from : '../publish.gradle'
+
+    configurations {
+        custom
+        compile.extendsFrom custom
+	} 
+
+	eclipse {
+		project {
+		    name = appName + "-html"
+		}
+	}
+}
+
+project(":gdx-twitter-html-tests") {
+    apply plugin : 'java'
+    	
+	apply from : '../publish.gradle'
+
+    configurations {
+        custom
+        compile.extendsFrom custom
+	} 
+
+	eclipse {
+		project {
+		    name = appName + "-html-tests"
+		}
+	}
+}
+
+project(":gdx-twitter-ios") {
+    apply plugin : 'java'
+    apply plugin : 'robovm'
+    	
+    	
+	apply from : '../publish.gradle'
+
+    configurations {
+        custom
+        compile.extendsFrom custom
+	} 
+
+	eclipse {
+		project {
+		    name = appName + "-ios"
+		}
+	}
+
+	dependencies {
+		
+		compile project(':gdx-twitter-core')
+		
+		compile "org.robovm:robovm-rt:${roboVMVersion}"
+        compile "org.robovm:robovm-cocoatouch:${roboVMVersion}"
+        compile "com.badlogicgames.gdx:gdx-backend-robovm:$gdxVersion"
+//        natives "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-ios"
+		
+		compile fileTree(dir: 'libs', include: '*.jar')
+	}
+}
+
+project(":gdx-twitter-ios-tests") {
+    apply plugin : 'java'
+    	
+	apply from : '../publish.gradle'
+
+    configurations {
+        custom
+        compile.extendsFrom custom
+	} 
+    
+	eclipse {
+		project {
+		    name = appName + "-ios-tests"
+		}
+	}
+	
+	dependencies {
+		
+		compile project(':gdx-twitter-ios')
+		
+		compile "junit:junit:$jUnitVersion"
+		compile "org.mockito:mockito-all:$mockitoVersion"
+		compile "org.powermock:powermock-mockito-release-full:$powermockVersion"
+		
+		
+		
+	}
+	
+}
+
+tasks.eclipse.doLast {
+    delete ".project"
+}
