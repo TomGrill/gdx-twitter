@@ -299,6 +299,10 @@ project(":gdx-twitter-ios") {
         compile "org.robovm:robovm-cocoatouch:${roboVMVersion}"
         compile "com.badlogicgames.gdx:gdx-backend-robovm:$gdxVersion"
 //        natives "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-ios"
+        
+        compile "commons-codec:commons-codec:1.10"
+        compile "oauth.signpost:signpost-commonshttp4:1.2.1.2"
+        compile "oauth.signpost:signpost-core:1.2.1.2"
 		
 		compile fileTree(dir: 'libs', include: '*.jar')
 	}
