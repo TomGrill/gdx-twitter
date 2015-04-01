@@ -36,6 +36,9 @@ public class TwitterSystem {
 
 		loadGdxReflections();
 		tryLoadAndroidTwitterAPI();
+		tryLoadDesktopTwitterAPI();
+		tryLoadHTMLTwitterAPI();
+		tryLoadIOSTWitterAPI();
 	}
 
 	private void loadGdxReflections() {
@@ -95,6 +98,74 @@ public class TwitterSystem {
 				e.printStackTrace();
 			}
 		}
+	}
+
+	private void tryLoadDesktopTwitterAPI() {
+		if (Gdx.app.getType() != ApplicationType.Desktop) {
+			Gdx.app.debug(TAG, "Skip loading Twitter API for Desktop. Not running Desktop. \n");
+			return;
+		}
+		try {
+
+			final Class<?> twitterClazz = ClassReflection.forName("de.tomgrill.gdxtwitter.desktop.DesktopTwitterAPI");
+			Object twitter = ClassReflection.getConstructor(twitterClazz, TwitterConfig.class).newInstance(config);
+
+			twitterAPI = (TwitterAPI) twitter;
+
+			Gdx.app.debug(TAG, "gdx-twitter for Desktop loaded successfully.");
+
+		} catch (ReflectionException e) {
+			Gdx.app.debug(TAG, "Error creating gdx-twitter for Desktop (are the gdx-twitter **.jar files installed?). \n");
+			e.printStackTrace();
+		}
+
+	}
+
+	private void tryLoadHTMLTwitterAPI() {
+		if (Gdx.app.getType() != ApplicationType.WebGL) {
+			Gdx.app.debug(TAG, "Skip loading gdx-twitter for HTML. Not running HTML. \n");
+			return;
+		}
+
+		try {
+
+			final Class<?> twitterClazz = ClassReflection.forName("de.tomgrill.gdxtwitter.html.HTMLTwitterAPI");
+			Object twitter = ClassReflection.getConstructor(twitterClazz, TwitterConfig.class).newInstance(config);
+
+			twitterAPI = (TwitterAPI) twitter;
+
+			Gdx.app.debug(TAG, "gdx-twitter for HTML loaded successfully.");
+
+		} catch (ReflectionException e) {
+			Gdx.app.debug(TAG, "Error creating gdx-twitter for HTML (are the gdx-twitter **.jar files installed?). \n");
+			e.printStackTrace();
+		}
+
+	}
+
+	private void tryLoadIOSTWitterAPI() {
+
+		if (Gdx.app.getType() != ApplicationType.iOS) {
+			Gdx.app.debug(TAG, "Skip loading gdx-twitter for iOS. Not running iOS. \n");
+			return;
+		}
+		try {
+
+			// Class<?> activityClazz =
+			// ClassReflection.forName("com.badlogic.gdx.backends.iosrobovm.IOSApplication");
+			final Class<?> twitterClazz = ClassReflection.forName("de.tomgrill.gdxtwitter.ios.IOSTwitterAPI");
+
+			Object twitter = ClassReflection.getConstructor(twitterClazz, TwitterConfig.class).newInstance(config);
+
+			twitterAPI = (TwitterAPI) twitter;
+
+			Gdx.app.debug(TAG, "gdx-twitter for iOS loaded successfully.");
+
+		} catch (ReflectionException e) {
+			Gdx.app.debug(TAG, "Error creating gdx-twitter for iOS (are the gdx-twitter **.jar files installed?). \n");
+			e.printStackTrace();
+		}
+
 	}
 
 	public TwitterAPI getTwitterAPI() {

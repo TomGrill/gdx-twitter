@@ -170,4 +170,51 @@ public class TwitterSystemUnitTests {
 		fixture = new TwitterSystem(config);
 		assertEquals(twitterAPIStub, fixture.getTwitterAPI());
 	}
+
+	@Test
+	@SuppressWarnings("static-access")
+	public void DesktopIsLoaded() {
+		Mockito.when(Gdx.app.getType()).thenReturn(ApplicationType.Desktop);
+		try {
+
+			Mockito.when(classReflectionMock.forName("de.tomgrill.gdxtwitter.desktop.DesktopTwitterAPI")).thenReturn(twitterAPIStub.getClass());
+			Mockito.when(classReflectionMock.getConstructor(twitterAPIStub.getClass(), TwitterConfig.class)).thenReturn(constructorMock);
+			Mockito.when(constructorMock.newInstance(config)).thenReturn(twitterAPIStub);
+		} catch (ReflectionException e) {
+		}
+
+		fixture = new TwitterSystem(config);
+		assertEquals(twitterAPIStub, fixture.getTwitterAPI());
+	}
+
+	@Test
+	@SuppressWarnings("static-access")
+	public void HTMLIsLoaded() {
+		Mockito.when(Gdx.app.getType()).thenReturn(ApplicationType.WebGL);
+		try {
+			Mockito.when(classReflectionMock.forName("de.tomgrill.gdxtwitter.html.HTMLTwitterAPI")).thenReturn(twitterAPIStub.getClass());
+			Mockito.when(classReflectionMock.getConstructor(twitterAPIStub.getClass(), TwitterConfig.class)).thenReturn(constructorMock);
+			Mockito.when(constructorMock.newInstance(config)).thenReturn(twitterAPIStub);
+		} catch (ReflectionException e) {
+		}
+
+		fixture = new TwitterSystem(config);
+		assertEquals(twitterAPIStub, fixture.getTwitterAPI());
+	}
+
+	@Test
+	@SuppressWarnings("static-access")
+	public void iOSIsLoaded() {
+		try {
+			Mockito.when(Gdx.app.getType()).thenReturn(ApplicationType.iOS);
+			Mockito.when(classReflectionMock.forName("de.tomgrill.gdxtwitter.ios.IOSTwitterAPI")).thenReturn(twitterAPIStub.getClass());
+			Mockito.when(classReflectionMock.getConstructor(twitterAPIStub.getClass(), TwitterConfig.class)).thenReturn(constructorMock);
+			Mockito.when(constructorMock.newInstance(config)).thenReturn(twitterAPIStub);
+		} catch (ReflectionException e) {
+		}
+
+		fixture = new TwitterSystem(config);
+		assertEquals(twitterAPIStub, fixture.getTwitterAPI());
+	}
+
 }
