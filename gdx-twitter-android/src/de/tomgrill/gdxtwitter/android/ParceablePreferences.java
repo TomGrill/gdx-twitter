@@ -14,25 +14,23 @@
  * limitations under the License.
  ******************************************************************************/
 
-package de.tomgrill.gdxtwitter.desktop;
+package de.tomgrill.gdxtwitter.android;
 
-import de.tomgrill.gdxtwitter.core.ResponseListener;
-import de.tomgrill.gdxtwitter.core.TwitterAPI;
-import de.tomgrill.gdxtwitter.core.TwitterConfig;
+import android.os.Parcel;
+import android.os.Parcelable;
 
-public class DesktopTwitterAPI extends TwitterAPI {
-	public DesktopTwitterAPI(TwitterConfig config) {
-		super(config);
+public class ParceablePreferences implements Parcelable {
+
+	@Override
+	public int describeContents() {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 
 	@Override
-	public boolean isLoaded() {
-		return true;
-	}
-
-	@Override
-	public void signin(boolean allowGUI, ResponseListener reponseListener) {
+	public void writeToParcel(Parcel arg0, int arg1) {
 		// TODO Auto-generated method stub
 
 	}
+
 }

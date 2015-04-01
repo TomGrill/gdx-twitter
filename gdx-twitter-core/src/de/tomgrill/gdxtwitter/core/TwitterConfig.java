@@ -14,9 +14,18 @@
  * limitations under the License.
  ******************************************************************************/
 
-
 package de.tomgrill.gdxtwitter.core;
 
 public class TwitterConfig {
+
+	public String PREFERECES_VARIABLE_PREFIX = "gdx-twitter.";
+
+	public String TWITTER_CONSUMER_KEY = "";
+
+	public String TWITTER_CONSUMER_SECRET = "";
+
+	public String STORAGE_FILENAME = ".gdx-twitter.data";
+
+	public final String TWITTER_CALLBACK_URL = "gdx-twitter://twitter";
 
 }

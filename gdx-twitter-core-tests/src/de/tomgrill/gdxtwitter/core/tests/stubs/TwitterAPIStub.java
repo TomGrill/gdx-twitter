@@ -27,7 +27,7 @@ public class TwitterAPIStub extends TwitterAPI {
 	}
 
 	@Override
-	public void signin(ResponseListener reponseListener) {
+	public void signin(boolean allowGUI, ResponseListener reponseListener) {
 		// TODO Auto-generated method stub
 
 	}

@@ -24,7 +24,7 @@ import com.badlogic.gdx.utils.reflect.ReflectionException;
 
 public class TwitterSystem {
 
-	public static final String TAG = "gdx-twitter";
+	private static final String TAG = "gdx-twitter";
 
 	private TwitterAPI twitterAPI;
 	private TwitterConfig config;

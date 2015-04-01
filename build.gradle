@@ -67,6 +67,10 @@ project(":gdx-twitter-android") {
 		
 		compile "com.badlogicgames.gdx:gdx-backend-android:$gdxVersion"
 		
+		compile "commons-codec:commons-codec:1.10"
+        compile "oauth.signpost:signpost-commonshttp4:1.2.1.2"
+        compile "oauth.signpost:signpost-core:1.2.1.2"
+		
 		
 		compile fileTree(dir: 'libs', include: '*.jar')
 	}
