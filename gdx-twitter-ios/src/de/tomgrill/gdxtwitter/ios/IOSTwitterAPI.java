@@ -19,6 +19,10 @@ package de.tomgrill.gdxtwitter.ios;
 import oauth.signpost.OAuthProvider;
 import oauth.signpost.commonshttp.CommonsHttpOAuthConsumer;
 import oauth.signpost.commonshttp.CommonsHttpOAuthProvider;
+import oauth.signpost.exception.OAuthCommunicationException;
+import oauth.signpost.exception.OAuthExpectationFailedException;
+import oauth.signpost.exception.OAuthMessageSignerException;
+import oauth.signpost.exception.OAuthNotAuthorizedException;
 
 import org.robovm.apple.coregraphics.CGRect;
 import org.robovm.apple.foundation.NSError;
@@ -31,6 +35,7 @@ import org.robovm.apple.uikit.UIViewAutoresizing;
 import org.robovm.apple.uikit.UIViewController;
 import org.robovm.apple.uikit.UIWebView;
 import org.robovm.apple.uikit.UIWebViewDelegate;
+import org.robovm.apple.uikit.UIWebViewDelegateAdapter;
 import org.robovm.apple.uikit.UIWebViewNavigationType;
 import org.robovm.apple.uikit.UIWindow;
 
@@ -47,6 +52,8 @@ public class IOSTwitterAPI extends TwitterAPI {
 
 	private OAuthProvider provider;
 	private CommonsHttpOAuthConsumer consumer;
+	
+	
 
 	public IOSTwitterAPI(TwitterConfig config) {
 		super(config);
@@ -63,7 +70,7 @@ public class IOSTwitterAPI extends TwitterAPI {
 	}
 
 	@Override
-	public void signin(final boolean allowGUI, final ResponseListener reponseListener) {
+	public void signin(final boolean allowGUI, final ResponseListener responseListener) {
 		if (rootViewController == null) {
 			rootViewController = new UIViewController();
 		}
@@ -95,7 +102,7 @@ public class IOSTwitterAPI extends TwitterAPI {
 			webView.setAutoresizingMask(UIViewAutoresizing.FlexibleWidth);
 		}
 
-		webView.setDelegate(new UIWebViewDelegate() {
+		webView.setDelegate(new UIWebViewDelegateAdapter() {
 
 			@Override
 			public void didStartLoad(UIWebView webView) {
@@ -115,27 +122,80 @@ public class IOSTwitterAPI extends TwitterAPI {
 				UIApplication.getSharedApplication().setNetworkActivityIndicatorVisible(false);
 
 				System.out.println("error loading");
-				reponseListener.error(error.description());
+				//responseListener.error(error.description());
 
 			}
 
 			@Override
 			public boolean shouldStartLoad(UIWebView webView, NSURLRequest request, UIWebViewNavigationType navigationType) {
-				System.out.println("shouldStartLoad " + request.getURL());
-				return false;
+				
+				String urlToCall = request.getURL().toString();
+				System.out.println("shouldStartLoad " + urlToCall);
+				
+				
+				if(urlToCall.contains("oauth_verifier=") && urlToCall.contains(config.TWITTER_CALLBACK_URL)) {
+					String oauthIdentifier = "oauth_verifier=";
+
+					int amperIndex = 0;
+					amperIndex = urlToCall.indexOf("&", amperIndex);
+					String verifier = urlToCall.substring(urlToCall.lastIndexOf(oauthIdentifier) + oauthIdentifier.length(), urlToCall.length());
+				
+					webView.stopLoading();
+					window.setHidden(true);
+					
+					receiveAccessToken(verifier, responseListener);
+				
+				} 
+				
+				return true;
 			}
+
+			
 		});
 		window.addSubview(webView);
 
+		
+		String authUrl = null;;
 		try {
-			String authUrl = provider.retrieveRequestToken(consumer, "http://www.tpronold.de");
+			authUrl = provider.retrieveRequestToken(consumer, config.TWITTER_CALLBACK_URL);
+			
+			
 
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
+		if(authUrl == null) {
+			responseListener.error("Could not build authUrl");
+			return;
+		}
+		
+		System.out.println("AUTH URL: "+ authUrl);
+		
 		window.makeKeyAndVisible();
-		webView.loadRequest(new NSURLRequest(new NSURL("http://www.apple.com/")));
+		webView.loadRequest(new NSURLRequest(new NSURL(authUrl)));
 
 	}
+	
+	private void receiveAccessToken(String verifier, final ResponseListener responseListener) {
+		try {
+			provider.retrieveAccessToken(consumer, verifier, new String[0]);
+			
+			System.out.println("AACC_TOKEN" + consumer.getToken() );
+			System.out.println("AACC_TOKEN_SEC" + consumer.getTokenSecret() );
+			
+			userToken = consumer.getToken();
+			userTokenSecret = consumer.getTokenSecret();
+			
+			responseListener.success();
+			
+		
+		} catch (Exception e) {
+			responseListener.error(e.getMessage());
+			
+		}
+		
+	}
+	
+	
 }

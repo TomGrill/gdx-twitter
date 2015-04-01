@@ -48,6 +48,8 @@ public class AndroidTwitterAPI extends TwitterAPI implements LifecycleListener {
 
 		prefs = Gdx.app.getPreferences(config.STORAGE_FILENAME);
 	}
+	
+	
 
 	@Override
 	public boolean isLoaded() {

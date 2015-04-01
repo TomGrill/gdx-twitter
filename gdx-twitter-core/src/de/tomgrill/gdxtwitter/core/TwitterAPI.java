@@ -17,6 +17,7 @@
 package de.tomgrill.gdxtwitter.core;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.Net.HttpRequest;
 import com.badlogic.gdx.Net.HttpResponse;
 import com.badlogic.gdx.Net.HttpResponseListener;
@@ -28,9 +29,14 @@ public abstract class TwitterAPI {
 	protected TwitterConfig config;
 	protected String userToken = null;
 	protected String userTokenSecret = null;
+	
+	
 
 	public TwitterAPI(TwitterConfig config) {
 		this.config = config;
+		
+		
+		
 	}
 
 	public boolean isLoaded() {
@@ -48,7 +54,13 @@ public abstract class TwitterAPI {
 	public String getUserToken() {
 		return userToken;
 	}
+	public void setUserToken(String userToken) {
+		this.userToken = userToken;
+	}
 
+	public void setUserTokenSecret(String userTokenSecret) {
+		this.userTokenSecret = userTokenSecret;
+	}
 	public String getUserTokenSecret() {
 		return userTokenSecret;
 	}
@@ -95,5 +107,5 @@ public abstract class TwitterAPI {
 		Gdx.net.sendHttpRequest(httpRequest, listener);
 
 	}
-
+	
 }
