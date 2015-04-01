@@ -39,6 +39,7 @@ import de.tomgrill.gdxtwitter.core.TwitterConfig;
 import de.tomgrill.gdxtwitter.core.TwitterSystem;
 import de.tomgrill.gdxtwitter.core.tests.stubs.ActivityStub;
 import de.tomgrill.gdxtwitter.core.tests.stubs.FragmentStub;
+import de.tomgrill.gdxtwitter.core.tests.stubs.GdxLifecycleListenerStub;
 import de.tomgrill.gdxtwitter.core.tests.stubs.GdxStub;
 import de.tomgrill.gdxtwitter.core.tests.stubs.SupportFragmentStub;
 import de.tomgrill.gdxtwitter.core.tests.stubs.TwitterAPIStub;
@@ -59,6 +60,7 @@ public class TwitterSystemUnitTests {
 	private GdxStub gdxStub;
 	private SupportFragmentStub supportFragmentStub;
 	private FragmentStub fragmentStub;
+	private GdxLifecycleListenerStub gdxLifecycleListenerStub;
 
 	private TwitterSystem fixture;
 
@@ -84,6 +86,7 @@ public class TwitterSystemUnitTests {
 		gdxStub = new GdxStub();
 		supportFragmentStub = new SupportFragmentStub();
 		fragmentStub = new FragmentStub();
+		gdxLifecycleListenerStub = new GdxLifecycleListenerStub();
 
 		Gdx.app = Mockito.mock(HeadlessApplication.class);
 
@@ -104,6 +107,8 @@ public class TwitterSystemUnitTests {
 			Mockito.when(classReflectionMock.forName("de.tomgrill.gdxtwitter.android.AndroidTwitterAPI")).thenReturn(twitterAPIStub.getClass());
 			Mockito.when(Gdx.app.getType()).thenReturn(ApplicationType.Android);
 			Mockito.when(classReflectionMock.getConstructor(twitterAPIStub.getClass(), activityStub.getClass(), TwitterConfig.class)).thenReturn(constructorMock);
+			Mockito.when(classReflectionMock.forName("com.badlogic.gdx.LifecycleListener")).thenReturn(gdxLifecycleListenerStub.getClass());
+			Mockito.when(classReflectionMock.getMethod(Gdx.app.getClass(), "addLifecycleListener", gdxLifecycleListenerStub.getClass())).thenReturn(methodMock);
 
 		} catch (ReflectionException e) {
 		}

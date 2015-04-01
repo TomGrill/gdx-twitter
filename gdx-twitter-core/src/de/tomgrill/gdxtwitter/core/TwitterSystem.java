@@ -19,6 +19,7 @@ package de.tomgrill.gdxtwitter.core;
 import com.badlogic.gdx.Application.ApplicationType;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.utils.reflect.ClassReflection;
+import com.badlogic.gdx.utils.reflect.Method;
 import com.badlogic.gdx.utils.reflect.ReflectionException;
 
 public class TwitterSystem {
@@ -30,6 +31,9 @@ public class TwitterSystem {
 
 	private Class<?> gdxClazz = null;
 	private Object gdxAppObject = null;
+
+	private Class<?> gdxLifecycleListenerClazz = null;
+	private Method gdxAppAddLifecycleListenerMethod = null;
 
 	public TwitterSystem(TwitterConfig config) {
 		this.config = config;
@@ -46,6 +50,8 @@ public class TwitterSystem {
 		try {
 			gdxClazz = ClassReflection.forName("com.badlogic.gdx.Gdx");
 			gdxAppObject = ClassReflection.getField(gdxClazz, "app").get(null);
+			gdxLifecycleListenerClazz = ClassReflection.forName("com.badlogic.gdx.LifecycleListener");
+			gdxAppAddLifecycleListenerMethod = ClassReflection.getMethod(gdxAppObject.getClass(), "addLifecycleListener", gdxLifecycleListenerClazz);
 
 		} catch (ReflectionException e) {
 			throw new RuntimeException("No libGDX environment. \n");
@@ -88,6 +94,8 @@ public class TwitterSystem {
 				}
 
 				Object twitter = ClassReflection.getConstructor(twitterClazz, activityClazz, TwitterConfig.class).newInstance(activity, config);
+
+				gdxAppAddLifecycleListenerMethod.invoke(gdxAppObject, twitter);
 
 				twitterAPI = (TwitterAPI) twitter;
 

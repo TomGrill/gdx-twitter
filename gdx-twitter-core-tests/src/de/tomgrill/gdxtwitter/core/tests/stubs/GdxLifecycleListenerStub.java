@@ -14,34 +14,9 @@
  * limitations under the License.
  ******************************************************************************/
 
-package de.tomgrill.gdxtwitter.android;
 
-import com.badlogic.gdx.LifecycleListener;
+package de.tomgrill.gdxtwitter.core.tests.stubs;
 
-import de.tomgrill.gdxtwitter.core.TwitterAPI;
+public class GdxLifecycleListenerStub {
 
-public class AndroidTwitterAPI extends TwitterAPI implements LifecycleListener {
-
-	@Override
-	public boolean isLoaded() {
-		return true;
-	}
-
-	@Override
-	public void pause() {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void resume() {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void dispose() {
-		// TODO Auto-generated method stub
-
-	}
 }
