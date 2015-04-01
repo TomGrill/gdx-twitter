@@ -243,6 +243,13 @@ project(":gdx-twitter-html") {
 		    name = appName + "-html"
 		}
 	}
+	
+dependencies {
+		
+		compile project(':gdx-twitter-core')
+		
+		compile fileTree(dir: 'libs', include: '*.jar')
+	}
 }
 
 project(":gdx-twitter-html-tests") {

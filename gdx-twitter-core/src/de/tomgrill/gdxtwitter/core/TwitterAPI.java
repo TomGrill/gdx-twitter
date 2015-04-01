@@ -14,9 +14,12 @@
  * limitations under the License.
  ******************************************************************************/
 
-
 package de.tomgrill.gdxtwitter.core;
 
 public class TwitterAPI {
+
+	public boolean isLoaded() {
+		return false;
+	}
 
 }

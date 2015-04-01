@@ -14,13 +14,8 @@
  * limitations under the License.
  ******************************************************************************/
 
-package de.tomgrill.gdxtwitter.ios;
+package de.tomgrill.gdxtwitter.core;
 
-import de.tomgrill.gdxtwitter.core.TwitterAPI;
+public class NotLoadedTwitterAPI extends TwitterAPI {
 
-public class IOSTwitterAPI extends TwitterAPI {
-	@Override
-	public boolean isLoaded() {
-		return true;
-	}
 }

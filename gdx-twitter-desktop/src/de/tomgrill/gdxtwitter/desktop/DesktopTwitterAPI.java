@@ -14,9 +14,13 @@
  * limitations under the License.
  ******************************************************************************/
 
-
 package de.tomgrill.gdxtwitter.desktop;
 
-public class DesktopTwitterAPI {
+import de.tomgrill.gdxtwitter.core.TwitterAPI;
 
+public class DesktopTwitterAPI extends TwitterAPI {
+	@Override
+	public boolean isLoaded() {
+		return true;
+	}
 }

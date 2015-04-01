@@ -14,9 +14,13 @@
  * limitations under the License.
  ******************************************************************************/
 
-
 package de.tomgrill.gdxtwitter.android;
 
-public class AndroidTwitterAPI {
+import de.tomgrill.gdxtwitter.core.TwitterAPI;
 
+public class AndroidTwitterAPI extends TwitterAPI {
+	@Override
+	public boolean isLoaded() {
+		return true;
+	}
 }
