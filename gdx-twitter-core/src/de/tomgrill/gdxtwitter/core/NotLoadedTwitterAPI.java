@@ -18,4 +18,8 @@ package de.tomgrill.gdxtwitter.core;
 
 public class NotLoadedTwitterAPI extends TwitterAPI {
 
+	public NotLoadedTwitterAPI(TwitterConfig config) {
+		super(config);
+	}
+
 }

@@ -17,8 +17,13 @@
 package de.tomgrill.gdxtwitter.desktop;
 
 import de.tomgrill.gdxtwitter.core.TwitterAPI;
+import de.tomgrill.gdxtwitter.core.TwitterConfig;
 
 public class DesktopTwitterAPI extends TwitterAPI {
+	public DesktopTwitterAPI(TwitterConfig config) {
+		super(config);
+	}
+
 	@Override
 	public boolean isLoaded() {
 		return true;

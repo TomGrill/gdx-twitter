@@ -17,8 +17,13 @@
 package de.tomgrill.gdxtwitter.html;
 
 import de.tomgrill.gdxtwitter.core.TwitterAPI;
+import de.tomgrill.gdxtwitter.core.TwitterConfig;
 
 public class HTMLTwitterAPI extends TwitterAPI {
+	public HTMLTwitterAPI(TwitterConfig config) {
+		super(config);
+	}
+
 	@Override
 	public boolean isLoaded() {
 		return true;

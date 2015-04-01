@@ -17,8 +17,13 @@
 package de.tomgrill.gdxtwitter.ios;
 
 import de.tomgrill.gdxtwitter.core.TwitterAPI;
+import de.tomgrill.gdxtwitter.core.TwitterConfig;
 
 public class IOSTwitterAPI extends TwitterAPI {
+	public IOSTwitterAPI(TwitterConfig config) {
+		super(config);
+	}
+
 	@Override
 	public boolean isLoaded() {
 		return true;

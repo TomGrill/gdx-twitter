@@ -18,8 +18,27 @@ package de.tomgrill.gdxtwitter.core;
 
 public class TwitterAPI {
 
+	protected boolean isSignedin = false;
+	protected TwitterConfig config;
+
+	public TwitterAPI(TwitterConfig config) {
+		this.config = config;
+	}
+
 	public boolean isLoaded() {
 		return false;
+	}
+
+	public boolean isSignedin() {
+		return isSignedin;
+	}
+
+	public void setSignedin(boolean isSignedin) {
+		this.isSignedin = isSignedin;
+	}
+
+	public TwitterConfig getConfig() {
+		return config;
 	}
 
 }

@@ -16,11 +16,20 @@
 
 package de.tomgrill.gdxtwitter.android;
 
+import android.app.Activity;
+
 import com.badlogic.gdx.LifecycleListener;
 
 import de.tomgrill.gdxtwitter.core.TwitterAPI;
+import de.tomgrill.gdxtwitter.core.TwitterConfig;
 
 public class AndroidTwitterAPI extends TwitterAPI implements LifecycleListener {
+
+	private Activity activity;
+
+	public AndroidTwitterAPI(Activity activity, TwitterConfig config) {
+		super(config);
+	}
 
 	@Override
 	public boolean isLoaded() {

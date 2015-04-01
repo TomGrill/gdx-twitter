@@ -82,7 +82,7 @@ public class TwitterSystemUnitTests {
 		methodMock = Mockito.mock(Method.class);
 
 		activityStub = new ActivityStub();
-		twitterAPIStub = new TwitterAPIStub();
+		twitterAPIStub = new TwitterAPIStub(config);
 		gdxStub = new GdxStub();
 		supportFragmentStub = new SupportFragmentStub();
 		fragmentStub = new FragmentStub();
