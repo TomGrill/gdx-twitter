@@ -14,25 +14,12 @@
  * limitations under the License.
  ******************************************************************************/
 
-package de.tomgrill.gdxtwitter.html;
+package de.tomgrill.gdxtwitter.core;
 
-import de.tomgrill.gdxtwitter.core.ResponseListener;
-import de.tomgrill.gdxtwitter.core.TwitterAPI;
-import de.tomgrill.gdxtwitter.core.TwitterConfig;
+public interface ResponseListener {
+	public void error(String errorMsg);
 
-public class HTMLTwitterAPI extends TwitterAPI {
-	public HTMLTwitterAPI(TwitterConfig config) {
-		super(config);
-	}
+	public void success();
 
-	@Override
-	public boolean isLoaded() {
-		return true;
-	}
-
-	@Override
-	public void signin(ResponseListener reponseListener) {
-		// TODO Auto-generated method stub
-
-	}
+	public void cancel();
 }

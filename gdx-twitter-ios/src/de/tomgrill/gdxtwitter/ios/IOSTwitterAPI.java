@@ -16,6 +16,7 @@
 
 package de.tomgrill.gdxtwitter.ios;
 
+import de.tomgrill.gdxtwitter.core.ResponseListener;
 import de.tomgrill.gdxtwitter.core.TwitterAPI;
 import de.tomgrill.gdxtwitter.core.TwitterConfig;
 
@@ -27,5 +28,11 @@ public class IOSTwitterAPI extends TwitterAPI {
 	@Override
 	public boolean isLoaded() {
 		return true;
+	}
+
+	@Override
+	public void signin(ResponseListener reponseListener) {
+		// TODO Auto-generated method stub
+
 	}
 }

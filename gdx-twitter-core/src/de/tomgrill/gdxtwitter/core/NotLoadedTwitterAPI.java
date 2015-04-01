@@ -22,4 +22,10 @@ public class NotLoadedTwitterAPI extends TwitterAPI {
 		super(config);
 	}
 
+	@Override
+	public void signin(ResponseListener reponseListener) {
+		// TODO Auto-generated method stub
+
+	}
+
 }

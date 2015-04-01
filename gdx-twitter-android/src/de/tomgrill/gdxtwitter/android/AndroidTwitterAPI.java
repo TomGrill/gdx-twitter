@@ -20,6 +20,7 @@ import android.app.Activity;
 
 import com.badlogic.gdx.LifecycleListener;
 
+import de.tomgrill.gdxtwitter.core.ResponseListener;
 import de.tomgrill.gdxtwitter.core.TwitterAPI;
 import de.tomgrill.gdxtwitter.core.TwitterConfig;
 
@@ -29,6 +30,7 @@ public class AndroidTwitterAPI extends TwitterAPI implements LifecycleListener {
 
 	public AndroidTwitterAPI(Activity activity, TwitterConfig config) {
 		super(config);
+		this.activity = activity;
 	}
 
 	@Override
@@ -50,6 +52,12 @@ public class AndroidTwitterAPI extends TwitterAPI implements LifecycleListener {
 
 	@Override
 	public void dispose() {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void signin(ResponseListener reponseListener) {
 		// TODO Auto-generated method stub
 
 	}
