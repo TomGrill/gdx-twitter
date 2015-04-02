@@ -86,18 +86,16 @@ public class IOSTwitterAPI extends TwitterAPI {
 
 		if (webView == null) {
 
-			
 			CGRect buttonFrame = new CGRect(10f, 0.0, 106.0f, 55f);
-			
+
 			CGRect fullScreen = rootViewController.getView().getFrame();
 			UIView topBackground = new UIView(new CGRect(0f, 0f, fullScreen.getWidth(), 55f));
 			topBackground.setBackgroundColor(UIColor.white());
-			
-			
+
 			UIView topDivider = new UIView(new CGRect(0f, 55f, fullScreen.getWidth(), 1f));
 			topDivider.setBackgroundColor(UIColor.white());
 			topDivider.setBackgroundColor(UIColor.darkGray());
-			
+
 			UIButton cancelButton = new UIButton(buttonFrame);
 
 			cancelButton.setTitle("cancel", UIControlState.Normal);
@@ -108,30 +106,21 @@ public class IOSTwitterAPI extends TwitterAPI {
 
 				@Override
 				public void onTouchUpInside(UIControl control, UIEvent event) {
-					System.out.println("cancel button pressed!");
 					responseListener.cancel();
 					window.setHidden(true);
 
 				}
 
 			});
-			
+
 			topBackground.addSubview(cancelButton);
 
 			window.addSubview(topBackground);
 			window.addSubview(topDivider);
 
-			// create the UIWebView
 			CGRect webFrame = rootViewController.getView().getFrame();
 			webFrame.getOrigin().setY(webFrame.getOrigin().getY() + 56f);
-			// .setY(webFrame.getOrigin().getY() + (Constants.TWEEN_MARGIN *
-			// 2.0) + Constants.TEXT_FIELD_HEIGHT + 70); // leave
-			// room
-			// for
-			// the
-			// URL
-			// input
-			// field
+
 			webFrame.getSize().setHeight(webFrame.getSize().getHeight() - 40.0);
 
 			webView = new UIWebView(webFrame);
@@ -144,7 +133,7 @@ public class IOSTwitterAPI extends TwitterAPI {
 
 			@Override
 			public void didStartLoad(UIWebView webView) {
-				UIApplication.getSharedApplication().setNetworkActivityIndicatorVisible(true);				
+				UIApplication.getSharedApplication().setNetworkActivityIndicatorVisible(true);
 			}
 
 			@Override
@@ -162,30 +151,30 @@ public class IOSTwitterAPI extends TwitterAPI {
 			public boolean shouldStartLoad(UIWebView webView, NSURLRequest request, UIWebViewNavigationType navigationType) {
 
 				String urlToCall = request.getURL().toString();
-				
-				//System.out.println(urlToCall);
 
-				if(urlToCall.contains(config.TWITTER_CALLBACK_URL)) {
-					if (urlToCall.contains("oauth_verifier="))  {
+				// System.out.println(urlToCall);
+
+				if (urlToCall.contains(config.TWITTER_CALLBACK_URL)) {
+					if (urlToCall.contains("oauth_verifier=")) {
 						String oauthIdentifier = "oauth_verifier=";
-	
+
 						int amperIndex = 0;
 						amperIndex = urlToCall.indexOf("&", amperIndex);
 						String verifier = urlToCall.substring(urlToCall.lastIndexOf(oauthIdentifier) + oauthIdentifier.length(), urlToCall.length());
-	
+
 						webView.stopLoading();
 						window.setHidden(true);
-	
+
 						receiveAccessToken(verifier, responseListener);
-	
+
 					}
-					
-					if (urlToCall.contains("denied="))  {
+
+					if (urlToCall.contains("denied=")) {
 						webView.stopLoading();
 						window.setHidden(true);
 						responseListener.cancel();
 					}
-					
+
 				}
 				return true;
 			}
