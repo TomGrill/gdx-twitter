@@ -33,6 +33,7 @@ import org.robovm.apple.uikit.UIControlContentVerticalAlignment;
 import org.robovm.apple.uikit.UIControlState;
 import org.robovm.apple.uikit.UIEvent;
 import org.robovm.apple.uikit.UIScreen;
+import org.robovm.apple.uikit.UIView;
 import org.robovm.apple.uikit.UIViewAutoresizing;
 import org.robovm.apple.uikit.UIViewController;
 import org.robovm.apple.uikit.UIWebView;
@@ -85,12 +86,24 @@ public class IOSTwitterAPI extends TwitterAPI {
 
 		if (webView == null) {
 
-			UIButton cancelButton = new UIButton();
+			
+			CGRect buttonFrame = new CGRect(10f, 0.0, 106.0f, 55f);
+			
+			CGRect fullScreen = rootViewController.getView().getFrame();
+			UIView topBackground = new UIView(new CGRect(0f, 0f, fullScreen.getWidth(), 55f));
+			topBackground.setBackgroundColor(UIColor.white());
+			
+			
+			UIView topDivider = new UIView(new CGRect(0f, 55f, fullScreen.getWidth(), 1f));
+			topDivider.setBackgroundColor(UIColor.white());
+			topDivider.setBackgroundColor(UIColor.darkGray());
+			
+			UIButton cancelButton = new UIButton(buttonFrame);
 
 			cancelButton.setTitle("cancel", UIControlState.Normal);
 			cancelButton.setContentVerticalAlignment(UIControlContentVerticalAlignment.Center);
 			cancelButton.setContentHorizontalAlignment(UIControlContentHorizontalAlignment.Left);
-
+			cancelButton.setTitleColor(UIColor.darkGray(), UIControlState.Normal);
 			cancelButton.addOnTouchUpInsideListener(new UIControl.OnTouchUpInsideListener() {
 
 				@Override
@@ -102,12 +115,15 @@ public class IOSTwitterAPI extends TwitterAPI {
 				}
 
 			});
+			
+			topBackground.addSubview(cancelButton);
 
-			window.addSubview(cancelButton);
+			window.addSubview(topBackground);
+			window.addSubview(topDivider);
 
 			// create the UIWebView
 			CGRect webFrame = rootViewController.getView().getFrame();
-			webFrame.getOrigin().setY(webFrame.getOrigin().getY() + (10 * 2.0) + 27 + 70);
+			webFrame.getOrigin().setY(webFrame.getOrigin().getY() + 56f);
 			// .setY(webFrame.getOrigin().getY() + (Constants.TWEEN_MARGIN *
 			// 2.0) + Constants.TEXT_FIELD_HEIGHT + 70); // leave
 			// room
@@ -128,7 +144,7 @@ public class IOSTwitterAPI extends TwitterAPI {
 
 			@Override
 			public void didStartLoad(UIWebView webView) {
-				UIApplication.getSharedApplication().setNetworkActivityIndicatorVisible(true);
+				UIApplication.getSharedApplication().setNetworkActivityIndicatorVisible(true);				
 			}
 
 			@Override
@@ -146,21 +162,31 @@ public class IOSTwitterAPI extends TwitterAPI {
 			public boolean shouldStartLoad(UIWebView webView, NSURLRequest request, UIWebViewNavigationType navigationType) {
 
 				String urlToCall = request.getURL().toString();
+				
+				//System.out.println(urlToCall);
 
-				if (urlToCall.contains("oauth_verifier=") && urlToCall.contains(config.TWITTER_CALLBACK_URL)) {
-					String oauthIdentifier = "oauth_verifier=";
-
-					int amperIndex = 0;
-					amperIndex = urlToCall.indexOf("&", amperIndex);
-					String verifier = urlToCall.substring(urlToCall.lastIndexOf(oauthIdentifier) + oauthIdentifier.length(), urlToCall.length());
-
-					webView.stopLoading();
-					window.setHidden(true);
-
-					receiveAccessToken(verifier, responseListener);
-
+				if(urlToCall.contains(config.TWITTER_CALLBACK_URL)) {
+					if (urlToCall.contains("oauth_verifier="))  {
+						String oauthIdentifier = "oauth_verifier=";
+	
+						int amperIndex = 0;
+						amperIndex = urlToCall.indexOf("&", amperIndex);
+						String verifier = urlToCall.substring(urlToCall.lastIndexOf(oauthIdentifier) + oauthIdentifier.length(), urlToCall.length());
+	
+						webView.stopLoading();
+						window.setHidden(true);
+	
+						receiveAccessToken(verifier, responseListener);
+	
+					}
+					
+					if (urlToCall.contains("denied="))  {
+						webView.stopLoading();
+						window.setHidden(true);
+						responseListener.cancel();
+					}
+					
 				}
-
 				return true;
 			}
 
