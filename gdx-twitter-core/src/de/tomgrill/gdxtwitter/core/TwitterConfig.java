@@ -69,6 +69,11 @@ public class TwitterConfig {
 	 * class. For example if you want to store the tokens in a database. Must
 	 * implement {@link TwitterSession}.
 	 */
-	public TwitterSession TWITTER_SESSION = new PreferencesTwitterSession(Gdx.app.getPreferences(TWITTER_SESSION_FILENAME), PREFERECES_VARIABLE_PREFIX);
+	//@formatter:off
+	public TwitterSession TWITTER_SESSION = new PreferencesTwitterSession(
+			
+			Gdx.app.getPreferences(
+					TWITTER_SESSION_FILENAME
+					), PREFERECES_VARIABLE_PREFIX);
 
 }

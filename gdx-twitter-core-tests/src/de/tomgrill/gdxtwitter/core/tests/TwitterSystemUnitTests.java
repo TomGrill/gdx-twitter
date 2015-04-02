@@ -17,6 +17,8 @@
 package de.tomgrill.gdxtwitter.core.tests;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.when;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -41,6 +43,7 @@ import de.tomgrill.gdxtwitter.core.tests.stubs.ActivityStub;
 import de.tomgrill.gdxtwitter.core.tests.stubs.FragmentStub;
 import de.tomgrill.gdxtwitter.core.tests.stubs.GdxLifecycleListenerStub;
 import de.tomgrill.gdxtwitter.core.tests.stubs.GdxStub;
+import de.tomgrill.gdxtwitter.core.tests.stubs.PreferencesStub;
 import de.tomgrill.gdxtwitter.core.tests.stubs.SupportFragmentStub;
 import de.tomgrill.gdxtwitter.core.tests.stubs.TwitterAPIStub;
 
@@ -67,6 +70,11 @@ public class TwitterSystemUnitTests {
 	@SuppressWarnings("static-access")
 	@Before
 	public void setup() {
+
+		Gdx.app = Mockito.mock(HeadlessApplication.class);
+
+		when(Gdx.app.getPreferences(anyString())).thenReturn(new PreferencesStub());
+
 		config = new TwitterConfig();
 
 		PowerMockito.mockStatic(ClassReflection.class);
@@ -87,8 +95,6 @@ public class TwitterSystemUnitTests {
 		supportFragmentStub = new SupportFragmentStub();
 		fragmentStub = new FragmentStub();
 		gdxLifecycleListenerStub = new GdxLifecycleListenerStub();
-
-		Gdx.app = Mockito.mock(HeadlessApplication.class);
 
 		try {
 			Mockito.when(classReflectionMock.forName("com.badlogic.gdx.Gdx")).thenReturn(gdxStub.getClass());
