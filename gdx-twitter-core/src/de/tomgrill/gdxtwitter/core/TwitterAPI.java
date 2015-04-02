@@ -91,39 +91,18 @@ public abstract class TwitterAPI {
 		return session.getTokenSecret();
 	}
 
-	abstract public void signin(boolean allowGUI, ResponseListener reponseListener);
+	abstract public void signin(final boolean allowGUI, final TwitterResponseListener reponseListener);
 
-	public void verifyCredentials(String token, String tokenSecret, final ResponseListener listener) {
+	public void verifyCredentials(String token, String tokenSecret, final TwitterResponseListener listener) {
 
 		TwitterRequest verifyCredentialsRequest = new TwitterRequest(TwitterRequestType.GET, "https://api.twitter.com/1.1/account/verify_credentials.json",
 				config.TWITTER_CONSUMER_KEY, config.TWITTER_CONSUMER_SECRET, token, tokenSecret);
 
-		sendRequest(verifyCredentialsRequest, new HttpResponseListener() {
-
-			@Override
-			public void handleHttpResponse(HttpResponse httpResponse) {
-				if (httpResponse.getStatus().getStatusCode() == 200) {
-					listener.success();
-				} else {
-					listener.error("ERROR:\n" + httpResponse.getResultAsString());
-				}
-			}
-
-			@Override
-			public void failed(Throwable t) {
-				listener.error("ERROR: Connection failed. Returned error message:\n" + t.toString());
-			}
-
-			@Override
-			public void cancelled() {
-				listener.cancel();
-			}
-
-		});
+		sendRequest(verifyCredentialsRequest, listener);
 
 	}
 
-	private void sendRequest(TwitterRequest twitterRequest, HttpResponseListener listener) {
+	private void sendRequest(final TwitterRequest twitterRequest, final TwitterResponseListener listener) {
 
 		HttpRequestBuilder requestBuilder = new HttpRequestBuilder();
 		HttpRequest httpRequest = requestBuilder.newRequest().method(twitterRequest.getRequestType().name()).url(twitterRequest.getUrl()).build();
@@ -133,7 +112,28 @@ public abstract class TwitterAPI {
 
 		httpRequest.setHeader("Authorization", twitterRequest.getHeader());
 		httpRequest.setContent(twitterRequest.getData());
-		Gdx.net.sendHttpRequest(httpRequest, listener);
+		Gdx.net.sendHttpRequest(httpRequest, new HttpResponseListener() {
+
+			@Override
+			public void handleHttpResponse(HttpResponse httpResponse) {
+				if (httpResponse.getStatus().getStatusCode() == 200) {
+					listener.success(httpResponse.getResultAsString());
+				} else {
+					listener.apiError(httpResponse.getStatus(), httpResponse.getResultAsString());
+				}
+			}
+
+			@Override
+			public void failed(Throwable t) {
+				listener.httpError(t);
+
+			}
+
+			@Override
+			public void cancelled() {
+				listener.cancelled();
+			}
+		});
 
 	}
 
@@ -159,7 +159,7 @@ public abstract class TwitterAPI {
 	 * @param listener
 	 *            handle response here
 	 */
-	public void newAPIRequest(TwitterRequest request, HttpResponseListener listener) {
+	public void newAPIRequest(TwitterRequest request, TwitterResponseListener listener) {
 		if (isSignedin()) {
 			request.setConsumerKey(config.TWITTER_CONSUMER_KEY);
 			request.setConsumerSecret(config.TWITTER_CONSUMER_SECRET);

@@ -14,22 +14,9 @@
  * limitations under the License.
  ******************************************************************************/
 
-package de.tomgrill.gdxtwitter.core.tests.stubs;
 
-import de.tomgrill.gdxtwitter.core.TwitterAPI;
-import de.tomgrill.gdxtwitter.core.TwitterConfig;
-import de.tomgrill.gdxtwitter.core.TwitterResponseListener;
+package de.tomgrill.gdxtwitter.core;
 
-public class TwitterAPIStub extends TwitterAPI {
-
-	public TwitterAPIStub(TwitterConfig config) {
-		super(config);
-	}
-
-	@Override
-	public void signin(boolean allowGUI, TwitterResponseListener reponseListener) {
-		// TODO Auto-generated method stub
-
-	}
+public class TwitterError {
 
 }

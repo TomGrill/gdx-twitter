@@ -21,10 +21,11 @@ import android.content.Intent;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.LifecycleListener;
+import com.badlogic.gdx.net.HttpStatus;
 
-import de.tomgrill.gdxtwitter.core.ResponseListener;
 import de.tomgrill.gdxtwitter.core.TwitterAPI;
 import de.tomgrill.gdxtwitter.core.TwitterConfig;
+import de.tomgrill.gdxtwitter.core.TwitterResponseListener;
 
 public class AndroidTwitterAPI extends TwitterAPI implements LifecycleListener {
 
@@ -37,7 +38,7 @@ public class AndroidTwitterAPI extends TwitterAPI implements LifecycleListener {
 
 	protected boolean userHasCanceledSignin = false;
 
-	private ResponseListener reponseListener;
+	private TwitterResponseListener reponseListener;
 
 	public AndroidTwitterAPI(Activity activity, TwitterConfig config) {
 		super(config);
@@ -60,15 +61,15 @@ public class AndroidTwitterAPI extends TwitterAPI implements LifecycleListener {
 			signinProcessStarted = false;
 
 			if (AndroidTwitterAuthIntent.TWITTER_SIGNIN_CANCELED) {
-				this.reponseListener.cancel();
+				this.reponseListener.cancelled();
 			} else {
 				session.setTokenAndSecret(AndroidTwitterAuthIntent.TWITTER_USER_TOKEN, AndroidTwitterAuthIntent.TWITTER_USER_TOKEN_SECRET);
 
 				if (session.getToken() != null && session.getTokenSecret() != null) {
 					isSignedin = true;
-					this.reponseListener.success();
+					this.reponseListener.success("OK");
 				} else {
-					this.reponseListener.error("ERROR WITH GUI LOGIN");
+					this.reponseListener.apiError(new HttpStatus(400), "Bad Request");
 				}
 			}
 
@@ -81,42 +82,49 @@ public class AndroidTwitterAPI extends TwitterAPI implements LifecycleListener {
 	}
 
 	@Override
-	public void signin(final boolean allowGUI, final ResponseListener responseListener) {
+	public void signin(final boolean allowGUI, final TwitterResponseListener responseListener) {
 		isSignedin = false;
 		if (!signinProcessStarted) {
 			signinProcessStarted = true;
 
 			if (session.getToken() != null && session.getTokenSecret() != null) {
-				verifyCredentials(session.getToken(), session.getTokenSecret(), new ResponseListener() {
+				verifyCredentials(session.getToken(), session.getTokenSecret(), new TwitterResponseListener() {
 
 					@Override
-					public void error(String errorMsg) {
-
-						if (allowGUI) {
-							runGUILogin(responseListener);
-						} else {
-							signout(true);
-							signinProcessStarted = false;
-							responseListener.error(errorMsg);
-						}
-					}
-
-					@Override
-					public void success() {
+					public void success(String data) {
 						isSignedin = true;
 						signinProcessStarted = false;
-						responseListener.success();
+						responseListener.success(data);
+
 					}
 
 					@Override
-					public void cancel() {
+					public void apiError(HttpStatus response, String data) {
 						if (allowGUI) {
 							runGUILogin(responseListener);
 						} else {
 							signout(true);
 							signinProcessStarted = false;
-							responseListener.cancel();
+							responseListener.apiError(response, data);
 						}
+
+					}
+
+					@Override
+					public void httpError(Throwable t) {
+						responseListener.httpError(t);
+					}
+
+					@Override
+					public void cancelled() {
+						if (allowGUI) {
+							runGUILogin(responseListener);
+						} else {
+							signout(true);
+							signinProcessStarted = false;
+							responseListener.cancelled();
+						}
+
 					}
 				});
 
@@ -134,7 +142,7 @@ public class AndroidTwitterAPI extends TwitterAPI implements LifecycleListener {
 
 	}
 
-	private void runGUILogin(final ResponseListener reponseListener) {
+	private void runGUILogin(final TwitterResponseListener reponseListener) {
 		this.reponseListener = reponseListener;
 		intent = new Intent(activity, AndroidTwitterAuthIntent.class);
 		intent.putExtra("TWITTER_CALLBACK_URL", config.TWITTER_CALLBACK_URL);

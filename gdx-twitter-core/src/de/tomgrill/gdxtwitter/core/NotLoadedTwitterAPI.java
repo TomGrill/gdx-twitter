@@ -23,8 +23,7 @@ public class NotLoadedTwitterAPI extends TwitterAPI {
 	}
 
 	@Override
-	public void signin(boolean allowGUI, ResponseListener reponseListener) {
-		// TODO Auto-generated method stub
+	public void signin(boolean allowGUI, TwitterResponseListener reponseListener) {
 
 	}
 

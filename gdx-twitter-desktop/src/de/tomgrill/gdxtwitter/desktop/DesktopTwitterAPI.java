@@ -16,9 +16,9 @@
 
 package de.tomgrill.gdxtwitter.desktop;
 
-import de.tomgrill.gdxtwitter.core.ResponseListener;
 import de.tomgrill.gdxtwitter.core.TwitterAPI;
 import de.tomgrill.gdxtwitter.core.TwitterConfig;
+import de.tomgrill.gdxtwitter.core.TwitterResponseListener;
 
 public class DesktopTwitterAPI extends TwitterAPI {
 	public DesktopTwitterAPI(TwitterConfig config) {
@@ -31,7 +31,7 @@ public class DesktopTwitterAPI extends TwitterAPI {
 	}
 
 	@Override
-	public void signin(boolean allowGUI, ResponseListener reponseListener) {
+	public void signin(boolean allowGUI, TwitterResponseListener reponseListener) {
 		// TODO Auto-generated method stub
 
 	}

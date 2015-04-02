@@ -16,10 +16,14 @@
 
 package de.tomgrill.gdxtwitter.core;
 
-public interface ResponseListener {
-	public void error(String errorMsg);
+import com.badlogic.gdx.net.HttpStatus;
 
-	public void success();
+public interface TwitterResponseListener {
+	public void success(String data);
 
-	public void cancel();
+	public void apiError(HttpStatus response, String data);
+
+	public void httpError(Throwable t);
+
+	public void cancelled();
 }

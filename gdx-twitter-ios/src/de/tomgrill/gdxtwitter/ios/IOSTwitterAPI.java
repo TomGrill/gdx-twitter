@@ -42,10 +42,11 @@ import org.robovm.apple.uikit.UIWebViewNavigationType;
 import org.robovm.apple.uikit.UIWindow;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.net.HttpStatus;
 
-import de.tomgrill.gdxtwitter.core.ResponseListener;
 import de.tomgrill.gdxtwitter.core.TwitterAPI;
 import de.tomgrill.gdxtwitter.core.TwitterConfig;
+import de.tomgrill.gdxtwitter.core.TwitterResponseListener;
 
 public class IOSTwitterAPI extends TwitterAPI {
 
@@ -73,7 +74,7 @@ public class IOSTwitterAPI extends TwitterAPI {
 		return true;
 	}
 
-	private void runGUILogin(final ResponseListener responseListener) {
+	private void runGUILogin(final TwitterResponseListener responseListener) {
 		if (rootViewController == null) {
 			rootViewController = new UIViewController();
 		}
@@ -106,7 +107,7 @@ public class IOSTwitterAPI extends TwitterAPI {
 
 				@Override
 				public void onTouchUpInside(UIControl control, UIEvent event) {
-					responseListener.cancel();
+					responseListener.cancelled();
 					window.setHidden(true);
 
 				}
@@ -172,7 +173,7 @@ public class IOSTwitterAPI extends TwitterAPI {
 					if (urlToCall.contains("denied=")) {
 						webView.stopLoading();
 						window.setHidden(true);
-						responseListener.cancel();
+						responseListener.cancelled();
 					}
 
 				}
@@ -192,7 +193,7 @@ public class IOSTwitterAPI extends TwitterAPI {
 		}
 
 		if (authUrl == null) {
-			responseListener.error("Could not build authUrl");
+			responseListener.apiError(new HttpStatus(400), "Bad Request");
 			return;
 		}
 
@@ -202,35 +203,47 @@ public class IOSTwitterAPI extends TwitterAPI {
 	}
 
 	@Override
-	public void signin(final boolean allowGUI, final ResponseListener responseListener) {
+	public void signin(final boolean allowGUI, final TwitterResponseListener responseListener) {
 		isSignedin = false;
 		if (session.getToken() != null && session.getTokenSecret() != null) {
-			verifyCredentials(session.getToken(), session.getTokenSecret(), new ResponseListener() {
+			verifyCredentials(session.getToken(), session.getTokenSecret(), new TwitterResponseListener() {
 
 				@Override
-				public void success() {
+				public void success(String data) {
 					isSignedin = true;
-					responseListener.success();
+					responseListener.success(data);
 
 				}
 
 				@Override
-				public void error(String errorMsg) {
+				public void apiError(HttpStatus response, String data) {
 					if (allowGUI) {
 						runGUILogin(responseListener);
 					} else {
 						signout(true);
-						responseListener.error(errorMsg);
+						responseListener.apiError(response, data);
+					}
+
+				}
+
+				@Override
+				public void httpError(Throwable t) {
+
+					if (allowGUI) {
+						runGUILogin(responseListener);
+					} else {
+						signout(true);
+						responseListener.httpError(t);
 					}
 				}
 
 				@Override
-				public void cancel() {
+				public void cancelled() {
 					if (allowGUI) {
 						runGUILogin(responseListener);
 					} else {
 						signout(true);
-						responseListener.cancel();
+						responseListener.cancelled();
 					}
 
 				}
@@ -245,14 +258,14 @@ public class IOSTwitterAPI extends TwitterAPI {
 		}
 	}
 
-	private void receiveAccessToken(String verifier, final ResponseListener responseListener) {
+	private void receiveAccessToken(String verifier, final TwitterResponseListener responseListener) {
 		try {
 			provider.retrieveAccessToken(consumer, verifier, new String[0]);
 			session.setTokenAndSecret(consumer.getToken(), consumer.getTokenSecret());
-			responseListener.success();
+			responseListener.success("OK");
 
 		} catch (Exception e) {
-			responseListener.error(e.getMessage());
+			responseListener.apiError(new HttpStatus(400), "Bad Request");
 
 		}
 
