@@ -19,10 +19,6 @@ package de.tomgrill.gdxtwitter.ios;
 import oauth.signpost.OAuthProvider;
 import oauth.signpost.commonshttp.CommonsHttpOAuthConsumer;
 import oauth.signpost.commonshttp.CommonsHttpOAuthProvider;
-import oauth.signpost.exception.OAuthCommunicationException;
-import oauth.signpost.exception.OAuthExpectationFailedException;
-import oauth.signpost.exception.OAuthMessageSignerException;
-import oauth.signpost.exception.OAuthNotAuthorizedException;
 
 import org.robovm.apple.coregraphics.CGRect;
 import org.robovm.apple.foundation.NSError;
@@ -34,7 +30,6 @@ import org.robovm.apple.uikit.UIScreen;
 import org.robovm.apple.uikit.UIViewAutoresizing;
 import org.robovm.apple.uikit.UIViewController;
 import org.robovm.apple.uikit.UIWebView;
-import org.robovm.apple.uikit.UIWebViewDelegate;
 import org.robovm.apple.uikit.UIWebViewDelegateAdapter;
 import org.robovm.apple.uikit.UIWebViewNavigationType;
 import org.robovm.apple.uikit.UIWindow;
@@ -42,6 +37,7 @@ import org.robovm.apple.uikit.UIWindow;
 import de.tomgrill.gdxtwitter.core.ResponseListener;
 import de.tomgrill.gdxtwitter.core.TwitterAPI;
 import de.tomgrill.gdxtwitter.core.TwitterConfig;
+import de.tomgrill.gdxtwitter.core.session.TwitterSession;
 
 public class IOSTwitterAPI extends TwitterAPI {
 
@@ -52,8 +48,8 @@ public class IOSTwitterAPI extends TwitterAPI {
 
 	private OAuthProvider provider;
 	private CommonsHttpOAuthConsumer consumer;
-	
-	
+
+	private TwitterSession twitterSession;
 
 	public IOSTwitterAPI(TwitterConfig config) {
 		super(config);
@@ -62,6 +58,7 @@ public class IOSTwitterAPI extends TwitterAPI {
 		provider = new CommonsHttpOAuthProvider("https://api.twitter.com/oauth/request_token", "https://api.twitter.com/oauth/access_token",
 				"https://api.twitter.com/oauth/authorize");
 
+		twitterSession = config.TWITTER_SESSION;
 	}
 
 	@Override
@@ -107,95 +104,81 @@ public class IOSTwitterAPI extends TwitterAPI {
 			@Override
 			public void didStartLoad(UIWebView webView) {
 				UIApplication.getSharedApplication().setNetworkActivityIndicatorVisible(true);
-				System.out.println("started loading");
 			}
 
 			@Override
 			public void didFinishLoad(UIWebView webView) {
 				UIApplication.getSharedApplication().setNetworkActivityIndicatorVisible(false);
-				System.out.println("finished loading");
 
 			}
 
 			@Override
 			public void didFailLoad(UIWebView webView, NSError error) {
 				UIApplication.getSharedApplication().setNetworkActivityIndicatorVisible(false);
-
-				System.out.println("error loading");
-				//responseListener.error(error.description());
-
 			}
 
 			@Override
 			public boolean shouldStartLoad(UIWebView webView, NSURLRequest request, UIWebViewNavigationType navigationType) {
-				
+
 				String urlToCall = request.getURL().toString();
 				System.out.println("shouldStartLoad " + urlToCall);
-				
-				
-				if(urlToCall.contains("oauth_verifier=") && urlToCall.contains(config.TWITTER_CALLBACK_URL)) {
+
+				if (urlToCall.contains("oauth_verifier=") && urlToCall.contains(config.TWITTER_CALLBACK_URL)) {
 					String oauthIdentifier = "oauth_verifier=";
 
 					int amperIndex = 0;
 					amperIndex = urlToCall.indexOf("&", amperIndex);
 					String verifier = urlToCall.substring(urlToCall.lastIndexOf(oauthIdentifier) + oauthIdentifier.length(), urlToCall.length());
-				
+
 					webView.stopLoading();
 					window.setHidden(true);
-					
+
 					receiveAccessToken(verifier, responseListener);
-				
-				} 
-				
+
+				}
+
 				return true;
 			}
 
-			
 		});
 		window.addSubview(webView);
 
-		
-		String authUrl = null;;
+		String authUrl = null;
+		;
 		try {
 			authUrl = provider.retrieveRequestToken(consumer, config.TWITTER_CALLBACK_URL);
-			
-			
 
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
-		if(authUrl == null) {
+		if (authUrl == null) {
 			responseListener.error("Could not build authUrl");
 			return;
 		}
-		
-		System.out.println("AUTH URL: "+ authUrl);
-		
+
+		System.out.println("AUTH URL: " + authUrl);
+
 		window.makeKeyAndVisible();
 		webView.loadRequest(new NSURLRequest(new NSURL(authUrl)));
 
 	}
-	
+
 	private void receiveAccessToken(String verifier, final ResponseListener responseListener) {
 		try {
 			provider.retrieveAccessToken(consumer, verifier, new String[0]);
-			
-			System.out.println("AACC_TOKEN" + consumer.getToken() );
-			System.out.println("AACC_TOKEN_SEC" + consumer.getTokenSecret() );
-			
-			userToken = consumer.getToken();
-			userTokenSecret = consumer.getTokenSecret();
-			
+
+			System.out.println("AACC_TOKEN" + consumer.getToken());
+			System.out.println("AACC_TOKEN_SEC" + consumer.getTokenSecret());
+
+			twitterSession.setTokenAndSecret(consumer.getToken(), consumer.getTokenSecret());
 			responseListener.success();
-			
-		
+
 		} catch (Exception e) {
 			responseListener.error(e.getMessage());
-			
+
 		}
-		
+
 	}
-	
-	
+
 }

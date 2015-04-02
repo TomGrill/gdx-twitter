@@ -17,26 +17,23 @@
 package de.tomgrill.gdxtwitter.core;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.Net.HttpRequest;
 import com.badlogic.gdx.Net.HttpResponse;
 import com.badlogic.gdx.Net.HttpResponseListener;
 import com.badlogic.gdx.net.HttpRequestBuilder;
 
+import de.tomgrill.gdxtwitter.core.session.TwitterSession;
+
 public abstract class TwitterAPI {
 
 	protected boolean isSignedin = false;
+
 	protected TwitterConfig config;
-	protected String userToken = null;
-	protected String userTokenSecret = null;
-	
-	
+	private TwitterSession session;
 
 	public TwitterAPI(TwitterConfig config) {
 		this.config = config;
-		
-		
-		
+		this.session = this.config.TWITTER_SESSION;
 	}
 
 	public boolean isLoaded() {
@@ -47,36 +44,29 @@ public abstract class TwitterAPI {
 		return isSignedin;
 	}
 
-	public TwitterConfig getConfig() {
-		return config;
+	public String getToken() {
+		return session.getToken();
 	}
 
-	public String getUserToken() {
-		return userToken;
-	}
-	public void setUserToken(String userToken) {
-		this.userToken = userToken;
+	public void setTokenAndSecret(String token, String secret) {
+		session.setTokenAndSecret(token, secret);
 	}
 
-	public void setUserTokenSecret(String userTokenSecret) {
-		this.userTokenSecret = userTokenSecret;
-	}
-	public String getUserTokenSecret() {
-		return userTokenSecret;
+	public String getTokenSecret() {
+		return session.getTokenSecret();
 	}
 
 	abstract public void signin(boolean allowGUI, ResponseListener reponseListener);
 
-	public void verifyCredentials(final ResponseListener listener) {
+	public void verifyCredentials(String token, String tokenSecret, final ResponseListener listener) {
 
 		TwitterRequest verifyCredentialsRequest = new TwitterRequest(TwitterRequestType.GET, "https://api.twitter.com/1.1/account/verify_credentials.json",
-				config.TWITTER_CONSUMER_KEY, config.TWITTER_CONSUMER_SECRET, this.userToken, this.userTokenSecret);
+				config.TWITTER_CONSUMER_KEY, config.TWITTER_CONSUMER_SECRET, token, tokenSecret);
 
 		sendRequest(verifyCredentialsRequest, new HttpResponseListener() {
 
 			@Override
 			public void handleHttpResponse(HttpResponse httpResponse) {
-
 				if (httpResponse.getStatus().getStatusCode() == 200) {
 					listener.success();
 				} else {
@@ -87,13 +77,13 @@ public abstract class TwitterAPI {
 			@Override
 			public void failed(Throwable t) {
 				listener.error("ERROR: Connection failed. Returned error message:\n" + t.toString());
-
 			}
 
 			@Override
 			public void cancelled() {
 				listener.cancel();
 			}
+
 		});
 
 	}
@@ -107,5 +97,5 @@ public abstract class TwitterAPI {
 		Gdx.net.sendHttpRequest(httpRequest, listener);
 
 	}
-	
+
 }

@@ -16,16 +16,59 @@
 
 package de.tomgrill.gdxtwitter.core;
 
+import com.badlogic.gdx.Gdx;
+
+import de.tomgrill.gdxtwitter.core.session.PreferencesTwitterSession;
+import de.tomgrill.gdxtwitter.core.session.TwitterSession;
+
 public class TwitterConfig {
 
-	public String PREFERECES_VARIABLE_PREFIX = "gdx-twitter.";
-
+	/**
+	 * Put your Consumer Key (API Key) here. Get it at <a
+	 * href="https://apps.twitter.com/">https://apps.twitter.com/</a>
+	 * 
+	 */
 	public String TWITTER_CONSUMER_KEY = "";
 
+	/**
+	 * Put your Consumer Secret (API Secret) here. Get it at <a
+	 * href="https://apps.twitter.com/">https://apps.twitter.com/</a>
+	 * 
+	 */
 	public String TWITTER_CONSUMER_SECRET = "";
 
-	public String STORAGE_FILENAME = ".gdx-twitter.data";
+	/*
+	 * ##########################################################################
+	 * 
+	 * 
+	 * Only edit settings below this line if you know what you do. Expert usage
+	 * only
+	 * 
+	 * ##########################################################################
+	 */
 
-	public final String TWITTER_CALLBACK_URL = "gdx-twitter://twitter";
+	/**
+	 * It is NOT recommended to change this value. If you do so you have to edit
+	 * your AndroidManifest.xml as well.
+	 */
+	public String TWITTER_CALLBACK_URL = "gdx-twitter://twitter";
+
+	/**
+	 * Prefix for variable names.
+	 */
+	public String PREFERECES_VARIABLE_PREFIX = "gdx-twitter.";
+
+	/**
+	 * Filename where session data is stored.
+	 */
+	public String TWITTER_SESSION_FILENAME = ".gdx-twitter-session";
+
+	/**
+	 * Class which manages the Twitter session. Default is
+	 * {@link PreferencesTwitterSession}. You can write your own session manager
+	 * class. For example if you want to store the tokens in a database. Must
+	 * implement {@link TwitterSession}.
+	 */
+	public TwitterSession TWITTER_SESSION = new PreferencesTwitterSession(Gdx.app.getPreferences(TWITTER_SESSION_FILENAME), PREFERECES_VARIABLE_PREFIX);
 
 }

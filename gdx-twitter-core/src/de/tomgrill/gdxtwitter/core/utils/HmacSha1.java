@@ -1,4 +1,4 @@
-package de.tomgrill.gdxtwitter.core;
+package de.tomgrill.gdxtwitter.core.utils;
 
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;

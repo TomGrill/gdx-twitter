@@ -12,7 +12,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Preferences;
 
 public class AndroidTwitterAuthIntent extends Activity {
 
@@ -23,10 +22,15 @@ public class AndroidTwitterAuthIntent extends Activity {
 
 	private Intent mIntent;
 
-	private String TWITTER_CONSUMER_KEY;
-	private String TWITTER_CONSUMER_SECRET;
-	private String TWITTER_CALLBACK_URL;
-	private String STORAGE_FILENAME;
+	private String consumerKey;
+	private String consumerSecret;
+	private String callbackURL;
+
+	static String TWITTER_USER_TOKEN = null;
+	static String TWITTER_USER_TOKEN_SECRET = null;
+	static boolean TWITTER_SIGNIN_CANCELED = false;
+
+	// private String transporterFilename;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -34,25 +38,22 @@ public class AndroidTwitterAuthIntent extends Activity {
 
 		mIntent = this.getIntent();
 
-		TWITTER_CONSUMER_KEY = mIntent.getStringExtra("TWITTER_CONSUMER_KEY");
-		TWITTER_CONSUMER_SECRET = mIntent.getStringExtra("TWITTER_CONSUMER_SECRET");
-		TWITTER_CALLBACK_URL = mIntent.getStringExtra("TWITTER_CALLBACK_URL");
-		STORAGE_FILENAME = mIntent.getStringExtra("STORAGE_FILENAME");
+		consumerKey = mIntent.getStringExtra("TWITTER_CONSUMER_KEY");
+		consumerSecret = mIntent.getStringExtra("TWITTER_CONSUMER_SECRET");
+		callbackURL = mIntent.getStringExtra("TWITTER_CALLBACK_URL");
+		// transporterFilename = mIntent.getStringExtra("STORAGE_FILENAME");
 
-		consumer = new CommonsHttpOAuthConsumer(TWITTER_CONSUMER_KEY, TWITTER_CONSUMER_SECRET);
+		consumer = new CommonsHttpOAuthConsumer(consumerKey, consumerSecret);
 		provider = new CommonsHttpOAuthProvider("https://api.twitter.com/oauth/request_token", "https://api.twitter.com/oauth/access_token",
 				"https://api.twitter.com/oauth/authorize");
 
 		/**
-		 * we delete all existing knowledge of this user and assume her canceled
+		 * we delete all existing knowledge of this user and assume he canceled
 		 * the signin process.
 		 */
-
-		Preferences prefs = Gdx.app.getPreferences(STORAGE_FILENAME);
-		prefs.putString("TWITTER_USER_TOKEN", null);
-		prefs.putString("TWITTER_USER_TOKEN_SECRET", null);
-		prefs.putBoolean("TWITTER_SIGNIN_CANCELED", true);
-		prefs.flush();
+		AndroidTwitterAuthIntent.TWITTER_USER_TOKEN = null;
+		AndroidTwitterAuthIntent.TWITTER_USER_TOKEN_SECRET = null;
+		AndroidTwitterAuthIntent.TWITTER_SIGNIN_CANCELED = true;
 
 		if (mIntent.getData() == null) {
 			try {
@@ -116,7 +117,7 @@ public class AndroidTwitterAuthIntent extends Activity {
 
 			String url = null;
 			try {
-				String authUrl = provider.retrieveRequestToken(consumer, TWITTER_CALLBACK_URL);
+				String authUrl = provider.retrieveRequestToken(consumer, callbackURL);
 				// Toast.makeText(activity, "Please authorize this app!",
 				// Toast.LENGTH_LONG).show();
 
@@ -138,7 +139,7 @@ public class AndroidTwitterAuthIntent extends Activity {
 				AndroidTwitterAuthIntent.this.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
 			} else {
 				// TODO what is happening
-				Gdx.app.log(TAG, "URL IS NULL - nOT GOOD");
+				Gdx.app.log(TAG, "URL IS NULL - NOT GOOD");
 			}
 		}
 	}
@@ -167,13 +168,9 @@ public class AndroidTwitterAuthIntent extends Activity {
 
 			if (success) {
 				// Now we can retrieve the goodies
-				String token = consumer.getToken();
-				String secret = consumer.getTokenSecret();
-				Preferences prefs = Gdx.app.getPreferences(STORAGE_FILENAME);
-				prefs.putString("TWITTER_USER_TOKEN", token);
-				prefs.putString("TWITTER_USER_TOKEN_SECRET", secret);
-				prefs.putBoolean("TWITTER_SIGNIN_CANCELED", false);
-				prefs.flush();
+				AndroidTwitterAuthIntent.TWITTER_USER_TOKEN = consumer.getToken();
+				AndroidTwitterAuthIntent.TWITTER_USER_TOKEN_SECRET = consumer.getTokenSecret();
+				AndroidTwitterAuthIntent.TWITTER_SIGNIN_CANCELED = false;
 			}
 
 			finish();

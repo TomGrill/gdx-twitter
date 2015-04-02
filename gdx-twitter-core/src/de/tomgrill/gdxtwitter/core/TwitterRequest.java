@@ -3,6 +3,8 @@ package de.tomgrill.gdxtwitter.core;
 import com.badlogic.gdx.utils.OrderedMap;
 import com.badlogic.gdx.utils.TimeUtils;
 
+import de.tomgrill.gdxtwitter.core.utils.PercentEncoder;
+
 public class TwitterRequest {
 
 	private String url;

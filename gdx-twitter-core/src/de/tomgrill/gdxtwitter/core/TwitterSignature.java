@@ -4,6 +4,10 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ObjectMap;
 import com.badlogic.gdx.utils.OrderedMap;
 
+import de.tomgrill.gdxtwitter.core.utils.Base64BytesToStringEncoder;
+import de.tomgrill.gdxtwitter.core.utils.HmacSha1;
+import de.tomgrill.gdxtwitter.core.utils.PercentEncoder;
+
 public class TwitterSignature {
 
 	private TwitterRequestType requestType;
