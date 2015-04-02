@@ -137,20 +137,6 @@ public abstract class TwitterAPI {
 
 	}
 
-	// private void newAPIRequest(TwitterRequestType type, String url,
-	// HttpResponseListener listener) {
-	// if (isSignedin()) {
-	// TwitterRequest request = new TwitterRequest(type, url,
-	// config.TWITTER_CONSUMER_KEY, config.TWITTER_CONSUMER_SECRET, getToken(),
-	// getTokenSecret());
-	// sendRequest(request, listener);
-	//
-	// } else {
-	// Gdx.app.debug(TAG, "Cannot do request when user is signed out.");
-	// listener.cancelled();
-	// }
-	// }
-
 	/**
 	 * Makes a new request to Twitter API.
 	 * 

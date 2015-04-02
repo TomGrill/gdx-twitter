@@ -110,13 +110,9 @@ public class TwitterRequest {
 
 		headerString = headerString.substring(0, headerString.length() - 2);
 
-		System.out.println("HEADER :" + headerString);
-
 		if (dataString.length() > 0) {
 			dataString = dataString.substring(0, dataString.length() - 1);
 		}
-
-		System.out.println("DATA :" + dataString);
 
 		return this;
 	}
