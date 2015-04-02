@@ -262,6 +262,7 @@ public class IOSTwitterAPI extends TwitterAPI {
 		try {
 			provider.retrieveAccessToken(consumer, verifier, new String[0]);
 			session.setTokenAndSecret(consumer.getToken(), consumer.getTokenSecret());
+			isSignedin = true;
 			responseListener.success("OK");
 
 		} catch (Exception e) {
