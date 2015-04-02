@@ -212,7 +212,6 @@ public class IOSTwitterAPI extends TwitterAPI {
 				public void success(String data) {
 					isSignedin = true;
 					responseListener.success(data);
-
 				}
 
 				@Override
@@ -223,7 +222,6 @@ public class IOSTwitterAPI extends TwitterAPI {
 						signout(true);
 						responseListener.apiError(response, data);
 					}
-
 				}
 
 				@Override
@@ -232,7 +230,6 @@ public class IOSTwitterAPI extends TwitterAPI {
 					if (allowGUI) {
 						runGUILogin(responseListener);
 					} else {
-						signout(true);
 						responseListener.httpError(t);
 					}
 				}
@@ -242,17 +239,15 @@ public class IOSTwitterAPI extends TwitterAPI {
 					if (allowGUI) {
 						runGUILogin(responseListener);
 					} else {
-						signout(true);
 						responseListener.cancelled();
 					}
-
 				}
 			});
 		} else {
+			signout(true);
 			if (allowGUI) {
 				runGUILogin(responseListener);
 			} else {
-				signout(true);
 				Gdx.app.debug(TAG, "Silent login failed.");
 			}
 		}
@@ -262,11 +257,38 @@ public class IOSTwitterAPI extends TwitterAPI {
 		try {
 			provider.retrieveAccessToken(consumer, verifier, new String[0]);
 			session.setTokenAndSecret(consumer.getToken(), consumer.getTokenSecret());
-			isSignedin = true;
-			responseListener.success("OK");
+
+			verifyCredentials(session.getToken(), session.getTokenSecret(), new TwitterResponseListener() {
+
+				@Override
+				public void success(String data) {
+					isSignedin = true;
+					responseListener.success(data);
+				}
+
+				@Override
+				public void apiError(HttpStatus response, String data) {
+					signout(true);
+					responseListener.apiError(response, data);
+
+				}
+
+				@Override
+				public void httpError(Throwable t) {
+					responseListener.httpError(t);
+
+				}
+
+				@Override
+				public void cancelled() {
+					responseListener.cancelled();
+
+				}
+
+			});
 
 		} catch (Exception e) {
-			responseListener.apiError(new HttpStatus(400), "Bad Request");
+			responseListener.cancelled();
 
 		}
 

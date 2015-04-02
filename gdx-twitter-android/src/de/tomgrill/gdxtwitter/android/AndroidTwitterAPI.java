@@ -64,13 +64,34 @@ public class AndroidTwitterAPI extends TwitterAPI implements LifecycleListener {
 				this.reponseListener.cancelled();
 			} else {
 				session.setTokenAndSecret(AndroidTwitterAuthIntent.TWITTER_USER_TOKEN, AndroidTwitterAuthIntent.TWITTER_USER_TOKEN_SECRET);
+				verifyCredentials(session.getToken(), session.getTokenSecret(), new TwitterResponseListener() {
 
-				if (session.getToken() != null && session.getTokenSecret() != null) {
-					isSignedin = true;
-					this.reponseListener.success("OK");
-				} else {
-					this.reponseListener.apiError(new HttpStatus(400), "Bad Request");
-				}
+					@Override
+					public void success(String data) {
+						isSignedin = true;
+						reponseListener.success(data);
+					}
+
+					@Override
+					public void apiError(HttpStatus response, String data) {
+						signout(true);
+						reponseListener.apiError(response, data);
+
+					}
+
+					@Override
+					public void httpError(Throwable t) {
+						reponseListener.httpError(t);
+
+					}
+
+					@Override
+					public void cancelled() {
+						reponseListener.cancelled();
+
+					}
+
+				});
 			}
 
 		}
@@ -112,7 +133,12 @@ public class AndroidTwitterAPI extends TwitterAPI implements LifecycleListener {
 
 					@Override
 					public void httpError(Throwable t) {
-						responseListener.httpError(t);
+						if (allowGUI) {
+							runGUILogin(responseListener);
+						} else {
+							signinProcessStarted = false;
+							responseListener.httpError(t);
+						}
 					}
 
 					@Override
@@ -120,7 +146,6 @@ public class AndroidTwitterAPI extends TwitterAPI implements LifecycleListener {
 						if (allowGUI) {
 							runGUILogin(responseListener);
 						} else {
-							signout(true);
 							signinProcessStarted = false;
 							responseListener.cancelled();
 						}
