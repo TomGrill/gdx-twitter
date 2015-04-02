@@ -29,11 +29,13 @@ public abstract class TwitterAPI {
 	protected boolean isSignedin = false;
 
 	protected TwitterConfig config;
-	private TwitterSession session;
+	protected TwitterSession session;
 
 	public TwitterAPI(TwitterConfig config) {
 		this.config = config;
+
 		this.session = this.config.TWITTER_SESSION;
+		this.session.restore();
 	}
 
 	public boolean isLoaded() {
@@ -96,6 +98,10 @@ public abstract class TwitterAPI {
 		httpRequest.setHeader("Authorization", twitterRequest.build().getHeader());
 		Gdx.net.sendHttpRequest(httpRequest, listener);
 
+	}
+
+	public void resetSession() {
+		session.reset();
 	}
 
 }

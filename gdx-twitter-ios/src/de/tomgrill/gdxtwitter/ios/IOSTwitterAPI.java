@@ -34,12 +34,15 @@ import org.robovm.apple.uikit.UIWebViewDelegateAdapter;
 import org.robovm.apple.uikit.UIWebViewNavigationType;
 import org.robovm.apple.uikit.UIWindow;
 
+import com.badlogic.gdx.Gdx;
+
 import de.tomgrill.gdxtwitter.core.ResponseListener;
 import de.tomgrill.gdxtwitter.core.TwitterAPI;
 import de.tomgrill.gdxtwitter.core.TwitterConfig;
-import de.tomgrill.gdxtwitter.core.session.TwitterSession;
 
 public class IOSTwitterAPI extends TwitterAPI {
+
+	private static final String TAG = "gdx-twitter";
 
 	private UIWebView webView;
 	private UIWindow window;
@@ -49,8 +52,6 @@ public class IOSTwitterAPI extends TwitterAPI {
 	private OAuthProvider provider;
 	private CommonsHttpOAuthConsumer consumer;
 
-	private TwitterSession twitterSession;
-
 	public IOSTwitterAPI(TwitterConfig config) {
 		super(config);
 
@@ -58,7 +59,6 @@ public class IOSTwitterAPI extends TwitterAPI {
 		provider = new CommonsHttpOAuthProvider("https://api.twitter.com/oauth/request_token", "https://api.twitter.com/oauth/access_token",
 				"https://api.twitter.com/oauth/authorize");
 
-		twitterSession = config.TWITTER_SESSION;
 	}
 
 	@Override
@@ -66,8 +66,7 @@ public class IOSTwitterAPI extends TwitterAPI {
 		return true;
 	}
 
-	@Override
-	public void signin(final boolean allowGUI, final ResponseListener responseListener) {
+	private void runGUILogin(final ResponseListener responseListener) {
 		if (rootViewController == null) {
 			rootViewController = new UIViewController();
 		}
@@ -121,7 +120,6 @@ public class IOSTwitterAPI extends TwitterAPI {
 			public boolean shouldStartLoad(UIWebView webView, NSURLRequest request, UIWebViewNavigationType navigationType) {
 
 				String urlToCall = request.getURL().toString();
-				System.out.println("shouldStartLoad " + urlToCall);
 
 				if (urlToCall.contains("oauth_verifier=") && urlToCall.contains(config.TWITTER_CALLBACK_URL)) {
 					String oauthIdentifier = "oauth_verifier=";
@@ -157,21 +155,59 @@ public class IOSTwitterAPI extends TwitterAPI {
 			return;
 		}
 
-		System.out.println("AUTH URL: " + authUrl);
-
 		window.makeKeyAndVisible();
 		webView.loadRequest(new NSURLRequest(new NSURL(authUrl)));
 
 	}
 
+	@Override
+	public void signin(final boolean allowGUI, final ResponseListener responseListener) {
+		isSignedin = false;
+		if (session.getToken() != null && session.getTokenSecret() != null) {
+			verifyCredentials(session.getToken(), session.getTokenSecret(), new ResponseListener() {
+
+				@Override
+				public void success() {
+					isSignedin = true;
+					responseListener.success();
+
+				}
+
+				@Override
+				public void error(String errorMsg) {
+					if (allowGUI) {
+						runGUILogin(responseListener);
+					} else {
+						resetSession();
+						responseListener.error(errorMsg);
+					}
+				}
+
+				@Override
+				public void cancel() {
+					if (allowGUI) {
+						runGUILogin(responseListener);
+					} else {
+						resetSession();
+						responseListener.cancel();
+					}
+
+				}
+			});
+		} else {
+			if (allowGUI) {
+				runGUILogin(responseListener);
+			} else {
+				resetSession();
+				Gdx.app.debug(TAG, "Silent login failed.");
+			}
+		}
+	}
+
 	private void receiveAccessToken(String verifier, final ResponseListener responseListener) {
 		try {
 			provider.retrieveAccessToken(consumer, verifier, new String[0]);
-
-			System.out.println("AACC_TOKEN" + consumer.getToken());
-			System.out.println("AACC_TOKEN_SEC" + consumer.getTokenSecret());
-
-			twitterSession.setTokenAndSecret(consumer.getToken(), consumer.getTokenSecret());
+			session.setTokenAndSecret(consumer.getToken(), consumer.getTokenSecret());
 			responseListener.success();
 
 		} catch (Exception e) {
