@@ -82,9 +82,13 @@ public class PreferencesTwitterSession implements TwitterSession {
 
 	@Override
 	public void reset() {
-		prefs.putString(variablePrefix + "TOKEN", null);
-		prefs.putString(variablePrefix + "TOKEN_SECRET", null);
+		prefs.remove(variablePrefix + "TOKEN");
+		prefs.remove(variablePrefix + "TOKEN_SECRET");
 		prefs.flush();
+
+		token = null;
+		tokenSecret = null;
+
 		isLoaded = false;
 
 	}

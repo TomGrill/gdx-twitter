@@ -52,7 +52,6 @@ public class AndroidTwitterAPI extends TwitterAPI implements LifecycleListener {
 
 	@Override
 	public void pause() {
-
 	}
 
 	@Override
@@ -79,8 +78,6 @@ public class AndroidTwitterAPI extends TwitterAPI implements LifecycleListener {
 
 	@Override
 	public void dispose() {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
@@ -98,7 +95,8 @@ public class AndroidTwitterAPI extends TwitterAPI implements LifecycleListener {
 						if (allowGUI) {
 							runGUILogin(responseListener);
 						} else {
-							resetSession();
+							signout(true);
+							signinProcessStarted = false;
 							responseListener.error(errorMsg);
 						}
 					}
@@ -106,6 +104,7 @@ public class AndroidTwitterAPI extends TwitterAPI implements LifecycleListener {
 					@Override
 					public void success() {
 						isSignedin = true;
+						signinProcessStarted = false;
 						responseListener.success();
 					}
 
@@ -114,7 +113,8 @@ public class AndroidTwitterAPI extends TwitterAPI implements LifecycleListener {
 						if (allowGUI) {
 							runGUILogin(responseListener);
 						} else {
-							resetSession();
+							signout(true);
+							signinProcessStarted = false;
 							responseListener.cancel();
 						}
 					}
@@ -124,7 +124,8 @@ public class AndroidTwitterAPI extends TwitterAPI implements LifecycleListener {
 				if (allowGUI) {
 					runGUILogin(responseListener);
 				} else {
-					resetSession();
+					signout(true);
+					signinProcessStarted = false;
 					Gdx.app.debug(TAG, "Silent login failed.");
 				}
 			}
@@ -139,7 +140,6 @@ public class AndroidTwitterAPI extends TwitterAPI implements LifecycleListener {
 		intent.putExtra("TWITTER_CALLBACK_URL", config.TWITTER_CALLBACK_URL);
 		intent.putExtra("TWITTER_CONSUMER_KEY", config.TWITTER_CONSUMER_KEY);
 		intent.putExtra("TWITTER_CONSUMER_SECRET", config.TWITTER_CONSUMER_SECRET);
-		// intent.putExtra("STORAGE_FILENAME", config.TWITTER_SESSION_FILENAME);
 		activity.startActivity(intent);
 
 	}

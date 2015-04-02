@@ -11,27 +11,52 @@ public class TwitterRequest {
 	private String consumerKey;
 	private String consumerSecret;
 
-	private String userToken;
-	private String userTokenSecret;
+	private String token;
+	private String tokenSecret;
 
 	private TwitterRequestType requestType;
 
 	private OrderedMap<String, String> parameters = new OrderedMap<String, String>();
+	private OrderedMap<String, String> dataParameters = new OrderedMap<String, String>();
 
-	private String headerString;
+	private String headerString = "";
+	private String dataString = "";
 
-	public TwitterRequest(TwitterRequestType requestType, String url, String consumerKey, String consumerSecret, String userToken, String userTokenSecret) {
+	public TwitterRequest(TwitterRequestType requestType, String url) {
+		this.requestType = requestType;
+		setUrl(url);
+	}
+
+	TwitterRequest(TwitterRequestType requestType, String url, String consumerKey, String consumerSecret, String token, String tokenSecret) {
 		setConsumerKey(consumerKey);
 		setConsumerSecret(consumerSecret);
 		setUrl(url);
 		this.requestType = requestType;
-		this.userToken = userToken;
-		this.userTokenSecret = userTokenSecret;
+		this.token = token;
+		this.tokenSecret = tokenSecret;
 
 	}
 
-	public void put(String key, String value) {
+	public String getToken() {
+		return token;
+	}
+
+	public void setToken(String token) {
+		this.token = token;
+	}
+
+	public String getTokenSecret() {
+		return tokenSecret;
+	}
+
+	public void setTokenSecret(String tokenSecret) {
+		this.tokenSecret = tokenSecret;
+	}
+
+	public TwitterRequest put(String key, String value) {
 		parameters.put(key, value);
+		return this;
+
 	}
 
 	public String getUrl() {
@@ -52,8 +77,8 @@ public class TwitterRequest {
 
 	public TwitterRequest build() {
 
-		if (this.userToken != null && this.userToken.length() > 0) {
-			put("oauth_token", this.userToken);
+		if (this.token != null && this.token.length() > 0) {
+			put("oauth_token", this.token);
 		}
 
 		headerString = "OAuth ";
@@ -66,7 +91,7 @@ public class TwitterRequest {
 		put("oauth_timestamp", timestamp);
 		put("oauth_version", "1.0");
 
-		TwitterSignature twitterSignature = new TwitterSignature(requestType, this.url, this.consumerSecret, this.userTokenSecret, parameters);
+		TwitterSignature twitterSignature = new TwitterSignature(requestType, this.url, this.consumerSecret, this.tokenSecret, parameters);
 		String signature = twitterSignature.getSignature();
 		put("oauth_signature", signature);
 
@@ -75,12 +100,23 @@ public class TwitterRequest {
 		while (entries.hasNext()) {
 			OrderedMap.Entry<String, String> pair = entries.next();
 
-			headerString += PercentEncoder.encode(pair.key) + "=\"" + PercentEncoder.encode(pair.value) + "\"";
-			if (entries.hasNext()) {
-				headerString += ", ";
+			if (pair.key.equals("oauth_token") || pair.key.equals("oauth_signature") || pair.key.equals("oauth_version") || pair.key.equals("oauth_consumer_key")
+					|| pair.key.equals("oauth_nonce") || pair.key.equals("oauth_signature_method") || pair.key.equals("oauth_timestamp")) {
+				headerString += PercentEncoder.encode(pair.key) + "=\"" + PercentEncoder.encode(pair.value) + "\", ";
+			} else {
+				dataString += PercentEncoder.encode(pair.key) + "=" + PercentEncoder.encode(pair.value) + "&";
 			}
-
 		}
+
+		headerString = headerString.substring(0, headerString.length() - 2);
+
+		System.out.println("HEADER :" + headerString);
+
+		if (dataString.length() > 0) {
+			dataString = dataString.substring(0, dataString.length() - 1);
+		}
+
+		System.out.println("DATA :" + dataString);
 
 		return this;
 	}
@@ -99,5 +135,9 @@ public class TwitterRequest {
 
 	public TwitterRequestType getRequestType() {
 		return this.requestType;
+	}
+
+	public String getData() {
+		return dataString;
 	}
 }

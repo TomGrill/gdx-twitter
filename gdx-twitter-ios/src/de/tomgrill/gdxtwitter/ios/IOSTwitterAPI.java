@@ -219,7 +219,7 @@ public class IOSTwitterAPI extends TwitterAPI {
 					if (allowGUI) {
 						runGUILogin(responseListener);
 					} else {
-						resetSession();
+						signout(true);
 						responseListener.error(errorMsg);
 					}
 				}
@@ -229,7 +229,7 @@ public class IOSTwitterAPI extends TwitterAPI {
 					if (allowGUI) {
 						runGUILogin(responseListener);
 					} else {
-						resetSession();
+						signout(true);
 						responseListener.cancel();
 					}
 
@@ -239,7 +239,7 @@ public class IOSTwitterAPI extends TwitterAPI {
 			if (allowGUI) {
 				runGUILogin(responseListener);
 			} else {
-				resetSession();
+				signout(true);
 				Gdx.app.debug(TAG, "Silent login failed.");
 			}
 		}

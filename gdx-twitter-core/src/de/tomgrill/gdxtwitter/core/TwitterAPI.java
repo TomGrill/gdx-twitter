@@ -26,6 +26,8 @@ import de.tomgrill.gdxtwitter.core.session.TwitterSession;
 
 public abstract class TwitterAPI {
 
+	private String TAG = "gdx-twitter";
+
 	protected boolean isSignedin = false;
 
 	protected TwitterConfig config;
@@ -38,22 +40,53 @@ public abstract class TwitterAPI {
 		this.session.restore();
 	}
 
+	/**
+	 * 
+	 * @return true when gdx-twitter is loaded on this platform and can be used.
+	 *         false when gdx-twitter is not loaded.
+	 */
 	public boolean isLoaded() {
 		return false;
 	}
 
+	/**
+	 * Indicates whether a user is signed in with Twitter. Requests can only be
+	 * made when the user is signed in. However when the user has unauthorized
+	 * your application or your application keys have changed then this will
+	 * also return true and your next request will throw an error.
+	 * 
+	 * @return
+	 */
 	public boolean isSignedin() {
 		return isSignedin;
 	}
 
+	/**
+	 * Returns the currently stored oauth token. May be null.
+	 * 
+	 * @return oauth token
+	 */
 	public String getToken() {
 		return session.getToken();
 	}
 
+	/**
+	 * Sets and stores a oauth token pair (token + secret).
+	 * 
+	 * @param token
+	 *            oauth token
+	 * @param secret
+	 *            oauth secret
+	 */
 	public void setTokenAndSecret(String token, String secret) {
 		session.setTokenAndSecret(token, secret);
 	}
 
+	/**
+	 * Returns the currenlty stored oauth token. May be null.
+	 * 
+	 * @return
+	 */
 	public String getTokenSecret() {
 		return session.getTokenSecret();
 	}
@@ -90,18 +123,76 @@ public abstract class TwitterAPI {
 
 	}
 
-	public void sendRequest(TwitterRequest twitterRequest, HttpResponseListener listener) {
+	private void sendRequest(TwitterRequest twitterRequest, HttpResponseListener listener) {
 
 		HttpRequestBuilder requestBuilder = new HttpRequestBuilder();
 		HttpRequest httpRequest = requestBuilder.newRequest().method(twitterRequest.getRequestType().name()).url(twitterRequest.getUrl()).build();
 
-		httpRequest.setHeader("Authorization", twitterRequest.build().getHeader());
+		// System.out.println(twitterRequest.build().getHeader());
+		twitterRequest.build();
+
+		httpRequest.setHeader("Authorization", twitterRequest.getHeader());
+		httpRequest.setContent(twitterRequest.getData());
 		Gdx.net.sendHttpRequest(httpRequest, listener);
 
 	}
 
-	public void resetSession() {
+	// private void newAPIRequest(TwitterRequestType type, String url,
+	// HttpResponseListener listener) {
+	// if (isSignedin()) {
+	// TwitterRequest request = new TwitterRequest(type, url,
+	// config.TWITTER_CONSUMER_KEY, config.TWITTER_CONSUMER_SECRET, getToken(),
+	// getTokenSecret());
+	// sendRequest(request, listener);
+	//
+	// } else {
+	// Gdx.app.debug(TAG, "Cannot do request when user is signed out.");
+	// listener.cancelled();
+	// }
+	// }
+
+	/**
+	 * Makes a new request to Twitter API.
+	 * 
+	 * @param request
+	 *            TwitterRequest
+	 * @param listener
+	 *            handle response here
+	 */
+	public void newAPIRequest(TwitterRequest request, HttpResponseListener listener) {
+		if (isSignedin()) {
+			request.setConsumerKey(config.TWITTER_CONSUMER_KEY);
+			request.setConsumerSecret(config.TWITTER_CONSUMER_SECRET);
+			request.setToken(getToken());
+			request.setTokenSecret(getTokenSecret());
+
+			sendRequest(request, listener);
+
+		} else {
+			Gdx.app.debug(TAG, "Cannot do request when user is signed out.");
+			listener.cancelled();
+		}
+	}
+
+	private void resetSession() {
 		session.reset();
+	}
+
+	/**
+	 * Disconnects the user from the TwitterAPI. When deleteSessionData is
+	 * false, on the next login TwitterAPI tries to reuse session data.
+	 * Otherwise all gained data will be deleted and the user has to give new
+	 * authorization on the next login.
+	 * 
+	 * @param deleteSessionData
+	 *            true if you want to delete gained session data. false if u
+	 *            want to keep it for later logins.
+	 */
+	public void signout(boolean deleteSessionData) {
+		isSignedin = false;
+		if (deleteSessionData) {
+			resetSession();
+		}
 	}
 
 }
