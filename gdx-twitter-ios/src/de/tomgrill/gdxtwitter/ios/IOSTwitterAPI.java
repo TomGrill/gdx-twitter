@@ -25,7 +25,13 @@ import org.robovm.apple.foundation.NSError;
 import org.robovm.apple.foundation.NSURL;
 import org.robovm.apple.foundation.NSURLRequest;
 import org.robovm.apple.uikit.UIApplication;
+import org.robovm.apple.uikit.UIButton;
 import org.robovm.apple.uikit.UIColor;
+import org.robovm.apple.uikit.UIControl;
+import org.robovm.apple.uikit.UIControlContentHorizontalAlignment;
+import org.robovm.apple.uikit.UIControlContentVerticalAlignment;
+import org.robovm.apple.uikit.UIControlState;
+import org.robovm.apple.uikit.UIEvent;
 import org.robovm.apple.uikit.UIScreen;
 import org.robovm.apple.uikit.UIViewAutoresizing;
 import org.robovm.apple.uikit.UIViewController;
@@ -78,6 +84,26 @@ public class IOSTwitterAPI extends TwitterAPI {
 		}
 
 		if (webView == null) {
+
+			UIButton cancelButton = new UIButton();
+
+			cancelButton.setTitle("cancel", UIControlState.Normal);
+			cancelButton.setContentVerticalAlignment(UIControlContentVerticalAlignment.Center);
+			cancelButton.setContentHorizontalAlignment(UIControlContentHorizontalAlignment.Left);
+
+			cancelButton.addOnTouchUpInsideListener(new UIControl.OnTouchUpInsideListener() {
+
+				@Override
+				public void onTouchUpInside(UIControl control, UIEvent event) {
+					System.out.println("cancel button pressed!");
+					responseListener.cancel();
+					window.setHidden(true);
+
+				}
+
+			});
+
+			window.addSubview(cancelButton);
 
 			// create the UIWebView
 			CGRect webFrame = rootViewController.getView().getFrame();
