@@ -29,20 +29,9 @@ import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import oauth.signpost.OAuthProvider;
 import oauth.signpost.commonshttp.CommonsHttpOAuthConsumer;
-
-import com.badlogic.gdx.net.HttpStatus;
-
 import de.tomgrill.gdxtwitter.core.TwitterConfig;
-import de.tomgrill.gdxtwitter.core.TwitterResponseListener;
 
 public class JXBrowserTwitterGUI extends Application {
-
-	/**
-	 * TODO I really dont like this static variables. But that is doing it for
-	 * now. NEEDS REFACTOR
-	 */
-	private static TwitterResponseListener listener;
-	private static boolean applicationIsStartet;
 
 	private static DesktopTwitterAPI desktopTwitterAPI;
 
@@ -50,49 +39,53 @@ public class JXBrowserTwitterGUI extends Application {
 
 	private static String authUrl;
 
-	private String url;
-	private WebView browser;
-	private WebEngine engine;
-	private StackPane sp;
-	private Scene root;
+	private static String url;
+	private static WebView browser;
+	private static WebEngine engine;
+	private static StackPane sp;
+	private static Scene root;
 
-	private Stage primaryStage;
+	private static Stage primaryStage;
 
 	private static OAuthProvider provider;
 	private static CommonsHttpOAuthConsumer consumer;
 
-	public void open() {
+	public static void open() {
 
-		authUrl = null;
+		if (!RunHelper.isStarted) {
+			RunHelper.isStarted = true;
+			Application.launch(new String());
+		}
+
+	}
+
+	private static void generateAuthUrl() {
+
 		try {
-			authUrl = provider.retrieveRequestToken(consumer, "http://tpronold.de/");
+			authUrl = provider.retrieveRequestToken(consumer, config.TWITTER_CALLBACK_URL);
 
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
 		if (authUrl == null) {
-			listener.apiError(new HttpStatus(400), "Bad Request");
-			return;
-		}
-
-		if (!applicationIsStartet) {
-			applicationIsStartet = true;
-			Application.launch(new String());
+			JXBrowserTwitterGUI.desktopTwitterAPI.sendDenied();
+		} else {
+			url = authUrl;
 		}
 
 	}
 
 	@Override
-	public void start(Stage primaryStage) throws Exception {
+	public void start(Stage primaryStage2) throws Exception {
 
 		Platform.setImplicitExit(false);
 
-		url = authUrl;
+		generateAuthUrl();
 
-		this.primaryStage = primaryStage;
-		this.primaryStage.setAlwaysOnTop(true);
-		this.primaryStage.setTitle("Twitter Signin");
+		primaryStage = primaryStage2;
+		primaryStage.setAlwaysOnTop(true);
+		primaryStage.setTitle("Twitter Signin");
 
 		browser = new WebView();
 
@@ -103,9 +96,7 @@ public class JXBrowserTwitterGUI extends Application {
 
 			@Override
 			public void changed(ObservableValue<? extends String> arg0, String oldloc, String newLocation) {
-
 				System.out.println(newLocation);
-
 				if (newLocation.contains("oauth_verifier=")) {
 					String oauthIdentifier = "oauth_verifier=";
 
@@ -119,7 +110,7 @@ public class JXBrowserTwitterGUI extends Application {
 				}
 
 				if (newLocation.contains("denied=")) {
-					JXBrowserTwitterGUI.desktopTwitterAPI.sendDenied();
+					JXBrowserTwitterGUI.desktopTwitterAPI.sendCancel();
 					closeBrowser();
 				}
 			}
@@ -131,12 +122,12 @@ public class JXBrowserTwitterGUI extends Application {
 
 		root = new Scene(sp);
 
-		this.primaryStage.setScene(root);
-		this.primaryStage.show();
+		primaryStage.setScene(root);
+		primaryStage.show();
 
-		this.primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+		primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
 			public void handle(WindowEvent we) {
-				JXBrowserTwitterGUI.listener.cancelled();
+				JXBrowserTwitterGUI.desktopTwitterAPI.sendCancel();
 			}
 		});
 	}
@@ -145,30 +136,30 @@ public class JXBrowserTwitterGUI extends Application {
 		primaryStage.close();
 	}
 
-	public void show(TwitterResponseListener listener) {
-		JXBrowserTwitterGUI.listener = listener;
-
-		open();
-	}
-
-	public void setConfig(TwitterConfig config) {
+	public static void setConfig(TwitterConfig config) {
 		JXBrowserTwitterGUI.config = config;
 
 	}
 
-	public void setDesktopTwitterAPI(DesktopTwitterAPI desktopTwitterAPI) {
+	public static void setDesktopTwitterAPI(DesktopTwitterAPI desktopTwitterAPI) {
 		JXBrowserTwitterGUI.desktopTwitterAPI = desktopTwitterAPI;
 
 	}
 
-	public void setConsumer(CommonsHttpOAuthConsumer consumer) {
+	public static void setConsumer(CommonsHttpOAuthConsumer consumer) {
 		JXBrowserTwitterGUI.consumer = consumer;
 
 	}
 
-	public void setProvider(OAuthProvider provider) {
+	public static void setProvider(OAuthProvider provider) {
 		JXBrowserTwitterGUI.provider = provider;
 
+	}
+
+	public static void reuse() {
+		generateAuthUrl();
+		engine.load(url);
+		primaryStage.show();
 	}
 
 }

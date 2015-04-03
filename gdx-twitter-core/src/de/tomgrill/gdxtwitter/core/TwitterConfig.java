@@ -37,6 +37,11 @@ public class TwitterConfig {
 	 */
 	public String TWITTER_CONSUMER_SECRET = "";
 
+	/**
+	 * 
+	 */
+	public String TWITTER_CALLBACK_URL = "https://github.com/TomGrill/gdx-twitter";
+
 	/*
 	 * ##########################################################################
 	 * 
@@ -50,8 +55,10 @@ public class TwitterConfig {
 	/**
 	 * It is NOT recommended to change this value. If you do so you have to edit
 	 * your AndroidManifest.xml as well.
+	 * 
 	 */
-	public String TWITTER_CALLBACK_URL = "gdx-twitter://twitter";
+	public String TWITTER_ANDROID_SCHEME = "gdx-twitter";
+	public String TWITTER_ANDROID_HOST = "twitter";
 
 	/**
 	 * Prefix for variable names.

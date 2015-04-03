@@ -16,6 +16,7 @@
 
 package de.tomgrill.gdxtwitter.desktop;
 
+import javafx.application.Platform;
 import oauth.signpost.OAuthProvider;
 import oauth.signpost.commonshttp.CommonsHttpOAuthConsumer;
 import oauth.signpost.commonshttp.CommonsHttpOAuthProvider;
@@ -39,8 +40,6 @@ public class DesktopTwitterAPI extends TwitterAPI {
 	public DesktopTwitterAPI(TwitterConfig config) {
 		super(config);
 
-		System.out.println("loaded");
-
 		consumer = new CommonsHttpOAuthConsumer(config.TWITTER_CONSUMER_KEY, config.TWITTER_CONSUMER_SECRET);
 		provider = new CommonsHttpOAuthProvider("https://api.twitter.com/oauth/request_token", "https://api.twitter.com/oauth/access_token",
 				"https://api.twitter.com/oauth/authorize");
@@ -53,7 +52,6 @@ public class DesktopTwitterAPI extends TwitterAPI {
 
 	@Override
 	public void signin(final boolean allowGUI, final TwitterResponseListener responseListener) {
-		System.out.println("sign in");
 		this.responseListener = responseListener;
 
 		isSignedin = false;
@@ -69,7 +67,7 @@ public class DesktopTwitterAPI extends TwitterAPI {
 				@Override
 				public void apiError(HttpStatus response, String data) {
 					if (allowGUI) {
-						runGUILogin(responseListener);
+						runGUILogin();
 					} else {
 						signout(true);
 						responseListener.apiError(response, data);
@@ -80,7 +78,7 @@ public class DesktopTwitterAPI extends TwitterAPI {
 				public void httpError(Throwable t) {
 
 					if (allowGUI) {
-						runGUILogin(responseListener);
+						runGUILogin();
 					} else {
 						responseListener.httpError(t);
 					}
@@ -89,7 +87,7 @@ public class DesktopTwitterAPI extends TwitterAPI {
 				@Override
 				public void cancelled() {
 					if (allowGUI) {
-						runGUILogin(responseListener);
+						runGUILogin();
 					} else {
 						responseListener.cancelled();
 					}
@@ -98,7 +96,7 @@ public class DesktopTwitterAPI extends TwitterAPI {
 		} else {
 			signout(true);
 			if (allowGUI) {
-				runGUILogin(responseListener);
+				runGUILogin();
 			} else {
 				Gdx.app.debug(TAG, "Silent login failed.");
 			}
@@ -106,57 +104,74 @@ public class DesktopTwitterAPI extends TwitterAPI {
 
 	}
 
-	private void runGUILogin(final TwitterResponseListener responseListener) {
+	private void runGUILogin() {
 
-		new Thread(new Runnable() {
+		JXBrowserTwitterGUI.setConfig(config);
+		JXBrowserTwitterGUI.setDesktopTwitterAPI(DesktopTwitterAPI.this);
 
-			@Override
-			public void run() {
-				JXBrowserTwitterGUI browser = new JXBrowserTwitterGUI();
-				browser.setConfig(config);
-				browser.setDesktopTwitterAPI(DesktopTwitterAPI.this);
+		JXBrowserTwitterGUI.setConsumer(consumer);
+		JXBrowserTwitterGUI.setProvider(provider);
 
-				browser.setConsumer(consumer);
-				browser.setProvider(provider);
+		// JXBrowserTwitterGUI.setListener(new TwitterResponseListener() {
+		//
+		// @Override
+		// public void success(String data) {
+		// isSignedin = true;
+		//
+		// System.out.println("NEED TO STORE ACCESS TOKENS ???");
+		//
+		// responseListener.success(data);
+		//
+		// }
+		//
+		// @Override
+		// public void apiError(HttpStatus response, String data) {
+		// responseListener.apiError(response, data);
+		//
+		// }
+		//
+		// @Override
+		// public void httpError(Throwable t) {
+		// responseListener.equals(t.getMessage());
+		//
+		// }
+		//
+		// @Override
+		// public void cancelled() {
+		// responseListener.cancelled();
+		//
+		// }
+		// });
 
-				browser.show(new TwitterResponseListener() {
+		if (RunHelper.isStarted) {
+			System.out.println("reuse");
 
-					@Override
-					public void success(String data) {
-						isSignedin = true;
+			Platform.runLater(new Runnable() {
+				@Override
+				public void run() {
+					JXBrowserTwitterGUI.reuse();
+				}
+			});
 
-						System.out.println("NEED TO STORE ACCESS TOKENS ???");
+		} else {
+			System.out.println("new");
+			new Thread(new Runnable() {
+				@Override
+				public void run() {
 
-						responseListener.success(data);
-
-					}
-
-					@Override
-					public void apiError(HttpStatus response, String data) {
-						responseListener.apiError(response, data);
-
-					}
-
-					@Override
-					public void httpError(Throwable t) {
-						responseListener.equals(t.getMessage());
-
-					}
-
-					@Override
-					public void cancelled() {
-						responseListener.cancelled();
-
-					}
-				});
-
-			}
-		}).start();
+					JXBrowserTwitterGUI.open();
+				}
+			}).start();
+		}
 
 	}
 
 	public void sendDenied() {
 		responseListener.apiError(new HttpStatus(400), "Bad Request");
+	}
+
+	public void sendCancel() {
+		responseListener.cancelled();
 	}
 
 	public void sendVerifier(String verifier) {

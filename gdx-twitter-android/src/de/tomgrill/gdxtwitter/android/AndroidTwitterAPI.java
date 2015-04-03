@@ -170,7 +170,7 @@ public class AndroidTwitterAPI extends TwitterAPI implements LifecycleListener {
 	private void runGUILogin(final TwitterResponseListener reponseListener) {
 		this.reponseListener = reponseListener;
 		intent = new Intent(activity, AndroidTwitterAuthIntent.class);
-		intent.putExtra("TWITTER_CALLBACK_URL", config.TWITTER_CALLBACK_URL);
+		intent.putExtra("TWITTER_CALLBACK_URL", config.TWITTER_ANDROID_SCHEME + "://" + config.TWITTER_ANDROID_HOST);
 		intent.putExtra("TWITTER_CONSUMER_KEY", config.TWITTER_CONSUMER_KEY);
 		intent.putExtra("TWITTER_CONSUMER_SECRET", config.TWITTER_CONSUMER_SECRET);
 		activity.startActivity(intent);
