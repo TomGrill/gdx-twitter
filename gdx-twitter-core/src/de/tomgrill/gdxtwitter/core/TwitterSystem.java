@@ -60,6 +60,12 @@ public class TwitterSystem {
 	}
 
 	private void tryLoadAndroidTwitterAPI() {
+
+		if (Gdx.app.getType() != ApplicationType.Android) {
+			Gdx.app.debug(TAG, "Skip loading Twitter API for Android. Not running Android. \n");
+			return;
+		}
+
 		if (Gdx.app.getType() == ApplicationType.Android) {
 			try {
 
