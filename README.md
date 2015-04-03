@@ -165,7 +165,11 @@ if (twitterAPI.isLoaded() && !twitterAPI.isSignedin()) {
 
 **Making a API request**
 
-This is an example for a tweet request. The Twitter API allows a lot of requests. I did not cover all possibles. So there might be stuff that does not work yet.
+This is an example for a tweet request. (https://dev.twitter.com/rest/reference/post/statuses/update) The Twitter API allows a lot of requests. I did not cover all possibles. So there might be stuff that does not work yet.
+
+Add all required parameters with put(..) to your request. In this case we just need the **status** parameter.
+
+
 ```
 TwitterRequest tweetTextRequest = new TwitterRequest(TwitterRequestType.POST, "https://api.twitter.com/1.1/statuses/update.json");
 tweetTextRequest.put("status", "Awesome, this is my first tweet with https://github.com/TomGrill/gdx-twitter. Thanks @TomGrillGames");
@@ -197,3 +201,21 @@ twitterAPI.newAPIRequest(tweetTextRequest, new TwitterResponseListener() {
 	}
 });
 ```
+
+##Release History
+
+Release history for major milestones (available via Maven):
+
+*Version 0.1.0: Initial Release
+
+##Reporting Issues
+
+Something not working quite as expected? Do you need a feature that has not been implemented yet? Check the issue tracker and add a new one if your problem is not already listed. Please try to provide a detailed description of your problem, including the steps to reproduce it.
+
+##Contributing
+
+Awesome! If you would like to contribute with a new feature or a bugfix, fork this repo and submit a pull request.
+
+##License
+
+The gdx-twitter project is licensed under the Apache 2 License, meaning you can use it free of charge, without strings attached in commercial and non-commercial projects. We love to get (non-mandatory) credit in case you release a game or app using gdx-twitter!
