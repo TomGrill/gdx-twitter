@@ -112,39 +112,7 @@ public class DesktopTwitterAPI extends TwitterAPI {
 		JXBrowserTwitterGUI.setConsumer(consumer);
 		JXBrowserTwitterGUI.setProvider(provider);
 
-		// JXBrowserTwitterGUI.setListener(new TwitterResponseListener() {
-		//
-		// @Override
-		// public void success(String data) {
-		// isSignedin = true;
-		//
-		// System.out.println("NEED TO STORE ACCESS TOKENS ???");
-		//
-		// responseListener.success(data);
-		//
-		// }
-		//
-		// @Override
-		// public void apiError(HttpStatus response, String data) {
-		// responseListener.apiError(response, data);
-		//
-		// }
-		//
-		// @Override
-		// public void httpError(Throwable t) {
-		// responseListener.equals(t.getMessage());
-		//
-		// }
-		//
-		// @Override
-		// public void cancelled() {
-		// responseListener.cancelled();
-		//
-		// }
-		// });
-
 		if (RunHelper.isStarted) {
-			System.out.println("reuse");
 
 			Platform.runLater(new Runnable() {
 				@Override
@@ -154,7 +122,6 @@ public class DesktopTwitterAPI extends TwitterAPI {
 			});
 
 		} else {
-			System.out.println("new");
 			new Thread(new Runnable() {
 				@Override
 				public void run() {
