@@ -25,6 +25,8 @@ Twitter API: https://dev.twitter.com/overview/api
 ## Setting up your Twitter App
 Go to https://apps.twitter.com/ and create a new app. Depending on your requirements edit the access level accordingly. You should have a Consumer Key (API Key) and Consumer Secret (API Secret) by now. Keep those keys secret!!
 
+Also make sure to uncheck "Enable Callback Locking (It is recommended to enable callback locking to ensure apps cannot overwrite the callback url)" option in your app settings.
+
 ## Installation
 
 **Core**
