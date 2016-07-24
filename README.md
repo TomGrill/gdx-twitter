@@ -123,6 +123,7 @@ Gdx.app.setLogLevel(Application.LOG_DEBUG); // only if you want log output
 TwitterConfig twitterConfig = new TwitterConfig();
 twitterConfig.TWITTER_CONSUMER_KEY = "YOUR_CONSUMER_KEY_HERE"; 
 twitterConfig.TWITTER_CONSUMER_SECRET = "YOUR_CONSUMER_SECRET_HERE"; 
+twitterConfig.TWITTER_CALLBACK_URL = "YOUR_TWITTER_CALLBACK_URL"; // Doesn't have to exist, but has to match app's settings
 
 TwitterSystem twitterSystem = new TwitterSystem(twitterConfig);
 TwitterAPI TwitterAPI =twitterSystem.getTwitterAPI(); 
