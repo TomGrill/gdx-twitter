@@ -42,6 +42,8 @@ public class TwitterConfig {
 	 */
 	public String TWITTER_CALLBACK_URL = "https://github.com/TomGrill/gdx-twitter";
 
+	public int TWITTER_REQUEST_TIMEOUT = 3000;	// in ms
+
 	/*
 	 * ##########################################################################
 	 * 
