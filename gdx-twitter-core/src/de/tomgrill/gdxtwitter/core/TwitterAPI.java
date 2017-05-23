@@ -112,6 +112,7 @@ public abstract class TwitterAPI {
 
 		httpRequest.setHeader("Authorization", twitterRequest.getHeader());
 		httpRequest.setContent(twitterRequest.getData());
+		httpRequest.setTimeOut(config.TWITTER_REQUEST_TIMEOUT);
 		Gdx.net.sendHttpRequest(httpRequest, new HttpResponseListener() {
 
 			@Override
