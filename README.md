@@ -11,7 +11,7 @@ I will also stream sometimes when developing at https://www.twitch.tv/tomgrill a
 ## Version
 Current status i **beta**. (It is not recommended to use this library in production releases.)
 
-Current snapshot: **0.1.0**
+Current snapshot: **0.1.1**
 
 Current stable: **not yet existing**
 
@@ -43,7 +43,7 @@ Add this to your libGDX build.gradle
 project(":core") {
 	dependencies {
 	    ...
-	    compile "de.tomgrill.gdxtwitter:gdx-twitter-core:0.1.0-SNAPSHOT"
+	    compile "de.tomgrill.gdxtwitter:gdx-twitter-core:0.1.1-SNAPSHOT"
 	    ...
 	}
 }
@@ -76,7 +76,7 @@ Add this to your libGDX build.gradle
 project(":android") {
 	dependencies {
 	    ...
-	    compile "de.tomgrill.gdxtwitter:gdx-twitter-android:0.1.0-SNAPSHOT"
+	    compile "de.tomgrill.gdxtwitter:gdx-twitter-android:0.1.1-SNAPSHOT"
 	    ...
 	}
 }
@@ -97,7 +97,7 @@ Add this to your libGDX build.gradle
 project(":ios") {
 	dependencies {
 	    ...
-	    compile "de.tomgrill.gdxtwitter:gdx-twitter-ios:0.1.0-SNAPSHOT"
+	    compile "de.tomgrill.gdxtwitter:gdx-twitter-ios:0.1.1-SNAPSHOT"
 	    ...
 	}
 }
@@ -110,7 +110,7 @@ project(":ios") {
 project(":desktop") {
 	dependencies {
 	    ...
-	    compile "de.tomgrill.gdxtwitter:gdx-twitter-desktop:0.1.0-SNAPSHOT"
+	    compile "de.tomgrill.gdxtwitter:gdx-twitter-desktop:0.1.1-SNAPSHOT"
 	    ...
 	}
 }
@@ -215,7 +215,7 @@ twitterAPI.newAPIRequest(tweetTextRequest, new TwitterResponseListener() {
 
 Release history for major milestones (available via Maven):
 
-*Version 0.1.0: Initial Release
+*Version 0.1.1: Initial Release
 
 ##Reporting Issues
 
