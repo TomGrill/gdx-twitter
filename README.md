@@ -215,7 +215,8 @@ twitterAPI.newAPIRequest(tweetTextRequest, new TwitterResponseListener() {
 
 Release history for major milestones (available via Maven):
 
-*Version 0.1.1: Initial Release
+*Version 0.1.0: Initial Release
+*Version 0.1.1: Add timeout variable
 
 ##Reporting Issues
 
