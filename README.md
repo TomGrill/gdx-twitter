@@ -34,6 +34,8 @@ Go to https://apps.twitter.com/ and create a new app. Depending on your requirem
 
 Also make sure to uncheck "Enable Callback Locking (It is recommended to enable callback locking to ensure apps cannot overwrite the callback url)" option in your app settings.
 
+Note: You must create a callback URL, even if you do not use it. 
+
 ## Installation
 
 **Core**
@@ -130,6 +132,7 @@ Gdx.app.setLogLevel(Application.LOG_DEBUG); // only if you want log output
 TwitterConfig twitterConfig = new TwitterConfig();
 twitterConfig.TWITTER_CONSUMER_KEY = "YOUR_CONSUMER_KEY_HERE"; 
 twitterConfig.TWITTER_CONSUMER_SECRET = "YOUR_CONSUMER_SECRET_HERE"; 
+twitterConfig.TWITTER_CALLBACK_URL = "SET THIS TO THE SAME URL YOU ADDED TO YOUR APP SETUP ABOVE"; 
 
 TwitterSystem twitterSystem = new TwitterSystem(twitterConfig);
 TwitterAPI TwitterAPI =twitterSystem.getTwitterAPI(); 
