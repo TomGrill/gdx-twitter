@@ -16,3 +16,6 @@ publishSnapshot.sh
 publishSnapshotTpronold.sh
 
 .DS_Store
+
+*.iml
+.idea/
