@@ -214,7 +214,7 @@ twitterAPI.newAPIRequest(tweetTextRequest, new TwitterResponseListener() {
 });
 ```
 
-** Proguard settings **
+**Proguard settings**
 
 ```
 -keep class com.badlogic.gdx.Gdx { *; }
