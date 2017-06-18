@@ -214,21 +214,30 @@ twitterAPI.newAPIRequest(tweetTextRequest, new TwitterResponseListener() {
 });
 ```
 
-##Release History
+** Proguard settings **
+
+```
+-keep class com.badlogic.gdx.Gdx { *; }
+-keep class com.badlogic.gdx.Application { ; }
+-keep class com.badlogic.gdx.LifecycleListener { ; }
+-keep class de.tomgrill.gdxtwitter. { *; }
+```
+
+## Release History
 
 Release history for major milestones (available via Maven):
 
-*Version 0.1.0: Initial Release
-*Version 0.1.1: Add timeout variable
+* Version 0.1.0: Initial Release
+* Version 0.1.1: Add timeout variable
 
-##Reporting Issues
+## Reporting Issues
 
 Something not working quite as expected? Do you need a feature that has not been implemented yet? Check the issue tracker and add a new one if your problem is not already listed. Please try to provide a detailed description of your problem, including the steps to reproduce it.
 
-##Contributing
+## Contributing
 
 Awesome! If you would like to contribute with a new feature or a bugfix, fork this repo and submit a pull request.
 
-##License
+## License
 
 The gdx-twitter project is licensed under the Apache 2 License, meaning you can use it free of charge, without strings attached in commercial and non-commercial projects. We love to get (non-mandatory) credit in case you release a game or app using gdx-twitter!
